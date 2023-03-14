@@ -1,0 +1,7 @@
+flask==2.2.3 
+flask_cors==3.0.10 
+numpy==1.24.2
+markupsafe==2.1.2
+scipy==1.10.0
+scikit-learn==1.2.1 
+pandas==1.5.3

@@ -1,0 +1,8 @@
+services:
+  anime-recommender-backend:
+    build: 
+      context: app
+      target: builder
+    stop_signal: SIGINT
+    ports:
+      - 8080:8080
