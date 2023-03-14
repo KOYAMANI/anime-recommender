@@ -11,22 +11,7 @@ export default class APIService {
         return response
     }
 
-    async getRecommendation(title: string) {
-        const response = await fetch(`http://localhost:8080/api/${title}`, {
-            method: 'GET',
-            headers: {
-                'cors': 'no-cors',
-                'content-type': 'application/json',
-            }
-        }).then(res => res.json()).catch(err =>console.log(err))
-        if (response.message){
-            throw Error(response.message)
-        } else {
-            return response
-        }
-    }
-
-    async getRecommendationV2(title:string) {
+    async getRecommendation(title:string) {
         const response = await fetch(`http://localhost:8080/api/anime`, {
             method: 'POST',
             headers: {
