@@ -10,6 +10,11 @@ function App() {
 
     const apiService = new APIService()
 
+    interface Anime {
+        title: string
+        image_url: string
+    }
+
     useEffect(() => {
         apiService
             .getHello()
@@ -30,7 +35,7 @@ function App() {
         } else {
             apiService
                 .getRecommendation(title)
-                .then((res) => setAnimes(res.data))
+                .then((res) => setAnimes(res))
                 .catch((err) => setError(err.message))
             setTitle('')
         }
@@ -55,14 +60,15 @@ function App() {
                 </form>
                 <div>
                     {animes ? (
-                        <div>
-                            {animes.map((anime: string) => {
-                                return (
-                                    <div>
-                                        <p>{`${anime} `}</p>
-                                    </div>
-                                )
-                            })}
+                       <div>
+                        {animes.map((anime: Anime) => {
+                            return (
+                            <div>
+                                <p key={anime.title}>{`${anime.title}`}</p>
+                                <img key={anime.title} src={`${anime.image_url}`} alt="anime" />
+                            </div>
+                            )
+                        })}
                         </div>
                     ) : null}
                 </div>

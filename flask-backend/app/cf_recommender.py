@@ -43,7 +43,7 @@ class CFRecommender():
 
     def give_rec(title, anime_pivot=anime_pivot, model_knn=model_knn):
         # capitalize the first letter of each word
-        title = title.title()
+        # title = title.title()
         query_index = anime_pivot.index.get_loc(title)
         distances, indices = model_knn.kneighbors(anime_pivot.iloc[query_index,:].values.reshape(1, -1), n_neighbors = 6)
         res = []
