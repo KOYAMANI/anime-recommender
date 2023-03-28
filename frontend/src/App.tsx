@@ -7,6 +7,7 @@ function App() {
     const [title, setTitle] = useState('')
     const [error, setError] = useState('')
     const [animes, setAnimes] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
 
     const apiService = new APIService()
 
@@ -27,15 +28,20 @@ function App() {
     }
 
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
+        setIsLoading(true)
         setAnimes([])
         setError('')
         event.preventDefault()
         if (title === '') {
             setError('Please enter a title')
+            setIsLoading(false)
         } else {
             apiService
                 .getRecommendation(title)
-                .then((res) => setAnimes(res))
+                .then((res) => {
+                    setAnimes(res)
+                    setIsLoading(false)
+                })
                 .catch((err) => setError(err.message))
             setTitle('')
         }
@@ -59,16 +65,27 @@ function App() {
                     </button>
                 </form>
                 <div>
+                    {isLoading && (
+                        <div>
+                            <p>Loading...</p>
+                        </div>
+                    )}
                     {animes ? (
-                       <div>
-                        {animes.map((anime: Anime) => {
-                            return (
-                            <div>
-                                <p key={anime.title}>{`${anime.title}`}</p>
-                                <img key={anime.title} src={`${anime.image_url}`} alt="anime" />
-                            </div>
-                            )
-                        })}
+                        <div>
+                            {animes.map((anime: Anime) => {
+                                return (
+                                    <div>
+                                        <p
+                                            key={anime.title}
+                                        >{`${anime.title}`}</p>
+                                        <img
+                                            key={anime.title}
+                                            src={`${anime.image_url}`}
+                                            alt="anime"
+                                        />
+                                    </div>
+                                )
+                            })}
                         </div>
                     ) : null}
                 </div>

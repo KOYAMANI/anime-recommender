@@ -12,7 +12,7 @@ export default class APIService {
     }
 
     async getRecommendation(title:string) {
-        const response = await fetch(`http://localhost:8080/api/anime/rec`, {
+        const response = await fetch(`http://localhost:8080/api/anime`, {
             method: 'POST',
             headers: {
                 'cors': 'no-cors',

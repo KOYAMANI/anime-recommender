@@ -41,7 +41,7 @@ class CFRecommender():
     model_knn = NearestNeighbors(metric = 'cosine', algorithm = 'brute')
     model_knn.fit(anime_matrix)
 
-    def give_rec(title, anime_pivot=anime_pivot, model_knn=model_knn):
+    def get_rec(title, anime_pivot=anime_pivot, model_knn=model_knn):
         # capitalize the first letter of each word
         # title = title.title()
         query_index = anime_pivot.index.get_loc(title)
