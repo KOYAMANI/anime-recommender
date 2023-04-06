@@ -7,7 +7,8 @@ Anime recommendation website based on [Anime Recommendation Database 2020](https
 ### For development
 
 ```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+docker-compose -f docker-compose.dev.yml up --build
+
 ```
 
 ### For production
