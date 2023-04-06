@@ -2,15 +2,32 @@ ARG FLASK_IMAGE=python:3.9.12
 
 FROM $FLASK_IMAGE as builder
 
-WORKDIR /app
+WORKDIR /app/app
 
-COPY requirements.txt /app
-RUN pip3 install -r requirements.txt
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY . /app
+COPY . .
 
-ENTRYPOINT ["python3"]
-CMD ["app.py"]
+EXPOSE 8080
+
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
+
+
+# ARG FLASK_IMAGE=python:3.9.12
+
+# FROM $FLASK_IMAGE as builder
+
+# WORKDIR /app
+
+# COPY requirements.txt /app
+# RUN pip3 install -r requirements.txt
+
+# COPY . /app
+
+# ENTRYPOINT ["python3"]
+# CMD ["app.py"]
+# ________________
 
 # FROM builder as dev-envs
 

@@ -22,7 +22,7 @@ class CBRecommender():
     def get_rec(self, anime_title, k=10):
         index = self.ANIME_DATASET[self.ANIME_DATASET['Name'] == anime_title].index[0]
         scores = list(enumerate(self.SIMILARITY[index]))
-        scores = sorted(scores, key=lambda x: x[1], reverse=True)
+        scores = sorted(scores, key=lambda x: x[1], reverse=True) # It might make computation time longer
         scores = scores[1:k+1]
         res = []
         for i in scores:

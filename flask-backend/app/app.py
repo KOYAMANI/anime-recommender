@@ -2,6 +2,7 @@ import os
 
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
+from dotenv import load_dotenv
 
 from cf_recommender import CFRecommender
 from cb_recommender import CBRecommender
@@ -9,8 +10,7 @@ from mal_handler import MalHandler
 from markupsafe import escape
 import json
 
-HOST = 'localhost'
-PORT = 8080
+load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -32,7 +32,7 @@ def get_image():
             body = request.get_json()
             title = body['title']
             try:
-                res = MalHandler.get_anime_image(title)
+                res = mal_handler.get_anime_image(title)
                 return res
             except KeyError:
                 return json.loads('{"message": "Anime not found!"}')
