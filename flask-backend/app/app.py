@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from cf_recommender import CFRecommender
 from cb_recommender import CBRecommender
 from mal_handler import MalHandler
+from dataset_handler import DatasetHandler
 from markupsafe import escape
 
 from factory import create_app, db
@@ -20,6 +21,7 @@ app.config["CORS_HEADERS"] = "Content-Type"
 
 cb_recommender = CBRecommender(app)
 mal_handler = MalHandler()
+dataset_handler = DatasetHandler()
 
 
 @app.route("/", methods=["GET"])
@@ -68,6 +70,22 @@ def rec_with_image():
             for title in anime_titles
         ]
         print("{0}: {1}".format(title, res[-1]["image_url"]))
+        return res
+    except KeyError:
+        return json.loads('{"message": "Anime not found!"}')
+
+
+@app.route("/api/suggestions", methods=["POST"])
+@cross_origin()
+def get_suggestions():
+    if request.headers.get("Content-Type") != "application/json":
+        return "Content-Type not supported!"
+    if request.method != "POST":
+        return "Method not supported!"
+
+    title = request.get_json()["title"]
+    try:
+        res = json.loads(dataset_handler.search_anime_titles(title))
         return res
     except KeyError:
         return json.loads('{"message": "Anime not found!"}')
