@@ -1,4 +1,3 @@
-# flask-backend/app/models/anime_name.py
 from flask_sqlalchemy import SQLAlchemy
 
 from factory import db
