@@ -2,24 +2,26 @@ version: '3.9'
 
 services:
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
     ports:
       - "80:80"
 
   flask-backend:
-    build: ./flask-backend
+    build: 
+      context: ./flask-backend
+      args:
+        FLASK_ENV: production
     ports:
       - "8080:8080"
-    depends_on:
-      - postgres-db
 
-  postgres-db:
-    image: postgres:13.4-alpine
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: adminpw
-      POSTGRES_DB: animerec
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./postgres-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  # postgres-db:
+  #   image: postgres:13.4-alpine
+  #   environment:
+  #     POSTGRES_USER: admin
+  #     POSTGRES_PASSWORD: adminpw
+  #     POSTGRES_DB: animerec
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./postgres-db/init.sql:/docker-entrypoint-initdb.d/init.sql
