@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from cf_recommender import CFRecommender
 from cb_recommender import CBRecommender
+from api_handler import APIHandler
 from mal_handler import MalHandler
 from dataset_handler import DatasetHandler
 from markupsafe import escape
@@ -22,6 +23,7 @@ app.config["CORS_HEADERS"] = "Content-Type"
 cb_recommender = CBRecommender(app)
 mal_handler = MalHandler()
 dataset_handler = DatasetHandler()
+api_handler = APIHandler()
 
 
 @app.route("/", methods=["GET"])
@@ -86,6 +88,36 @@ def get_suggestions():
     title = request.get_json()["title"]
     try:
         res = json.loads(dataset_handler.search_anime_titles(title))
+        return res
+    except KeyError:
+        return json.loads('{"message": "Anime not found!"}')
+
+
+@app.route("/api/v2/anime", methods=["POST"])
+@cross_origin()
+def get_anime_v2():
+    if request.headers.get("Content-Type") != "application/json":
+        return "Content-Type not supported!"
+    if request.method != "POST":
+        return "Method not supported!"
+
+    title = request.get_json()["title"]
+    try:
+        res = api_handler.get_anime_info(title)
+        return res
+    except KeyError:
+        return json.loads('{"message": "Anime not found!"}')
+
+
+@app.route("/api/v2/anime/image/<id>", methods=["POST"])
+@cross_origin()
+def get_image_v2(id):
+    # if request.headers.get("Content-Type") != "application/json":
+    #     return "Content-Type not supported!"
+    if request.method != "POST":
+        return "Method not supported!"
+    try:
+        res = api_handler.get_anime_picture(id)
         return res
     except KeyError:
         return json.loads('{"message": "Anime not found!"}')
