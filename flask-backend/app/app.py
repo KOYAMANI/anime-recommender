@@ -21,9 +21,9 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.config["CORS_HEADERS"] = "Content-Type"
 
 cb_recommender = CBRecommender(app)
-mal_handler = MalHandler()
-dataset_handler = DatasetHandler()
-api_handler = APIHandler()
+mal_handler = MalHandler(app)
+dataset_handler = DatasetHandler(app)
+api_handler = APIHandler(app)
 
 
 @app.route("/", methods=["GET"])

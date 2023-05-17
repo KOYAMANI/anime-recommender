@@ -2,14 +2,28 @@ import pandas as pd
 import json
 import re
 from os.path import join, dirname, realpath
+from models.anime_data import AnimeData
+from models.anime_name import AnimeName
+from flask import current_app
 
 
 class DatasetHandler:
-    def __init__(self):
-        self_DATASET_PATH = join(dirname(realpath(__file__)), "./input")
-        self.ANIME_DATASET = pd.read_csv(
-            join(self_DATASET_PATH, "anime_2020_cleaned.csv")
-        )
+    def __init__(self, app):
+        self.app = app
+        self.ANIME_DATASET = self.load_anime_data()
+        # self.ANIME_NAME_DATASET = self.load_anime_name()
+
+    def load_anime_data(self):
+        with self.app.app_context():
+            anime_data = AnimeData.query.all()
+            anime_df = pd.DataFrame([anime.to_dict() for anime in anime_data])
+            return anime_df
+
+    # def load_anime_name(self):
+    #     with self.app.app_context():
+    #         anime_name_data = AnimeName.query.all()
+    #         anime_name_df = pd.DataFrame([anime_name.to_dict() for anime_name in anime_name_data])
+    #         return anime_name_df
 
     def get_anime_id(self, title):
         try:
