@@ -1,15 +1,14 @@
 import os
 
-from dataset_handler import DatasetHandler
+from .dataset_handler import DatasetHandler
 import requests
 import json
 from flask import current_app
 
 
 class MalHandler:
-    def __init__(self, app):
-        self.app = app
-        self.dataset_handler = DatasetHandler(app)
+    def __init__(self):
+        self.dataset_handler = DatasetHandler()
         self.MAL_API_URL = os.getenv("MAL_API_URL")
         self.X_MAL_CLIENT_ID = os.getenv("X_MAL_CLIENT_ID")
 

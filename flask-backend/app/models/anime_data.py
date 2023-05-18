@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
-from factory import db
+from app import db
 
 
 class AnimeData(db.Model):

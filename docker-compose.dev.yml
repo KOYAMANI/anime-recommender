@@ -15,8 +15,7 @@ services:
   flask-backend:
     build: 
       context: ./flask-backend
-      args:
-        FLASK_ENV: development
+      dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"
     depends_on:
