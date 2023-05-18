@@ -52,9 +52,11 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker compose -f docker-compose.yml pull --ignore-pull-failures --include-deps
-
         # Build 
-        docker compose -f docker-compose.yml build 
-
-        # Push 
-        docker compose -f docker-compose.yml push
+        docker compose -f docker-compose.yml build
+        # Tag and push the backend image
+        docker tag backend:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}/flask-backend:${IMAGE_TAG}
+        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}/flask-backend:${IMAGE_TAG}
+        # Tag and push the frontend image
+        docker tag frontend:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}/frontend:${IMAGE_TAG}
+        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}/frontend:${IMAGE_TAG}
