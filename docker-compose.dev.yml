@@ -13,7 +13,10 @@ services:
       - ./frontend/public:/app/public
 
   flask-backend:
-    build: ./flask-backend
+    build: 
+      context: ./flask-backend
+      args:
+        FLASK_ENV: development
     ports:
       - "8080:8080"
     depends_on:

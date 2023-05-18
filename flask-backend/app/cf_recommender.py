@@ -4,12 +4,14 @@ from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
 from os.path import join, dirname, realpath
 import json
+from flask import current_app
 
 
 class CFRecommender:
-    def __init__(self):
+    def __init__(self, app):
         pass
 
+    # TODO: Use database instead of csv
     CSV_PATH = join(dirname(realpath(__file__)), "./input")
 
     anime_data = pd.read_csv(join(CSV_PATH, "anime_cleaned.csv"))

@@ -2,21 +2,16 @@ import pandas as pd
 import json
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from models.anime_data import AnimeData
+from dataset_handler import DatasetHandler
 from flask import current_app
 
 
 class CBRecommender:
     def __init__(self, app):
         self.app = app
-        self.ANIME_DATASET = self.load_anime_data()
+        self.dataset_handler = DatasetHandler(app)
+        self.ANIME_DATASET = self.dataset_handler.ANIME_DATASET
         self.SIMILARITY = self.calc_similarity()
-
-    def load_anime_data(self):
-        with self.app.app_context():
-            anime_data = AnimeData.query.all()
-            anime_df = pd.DataFrame([anime.to_dict() for anime in anime_data])
-            return anime_df
 
     def calc_similarity(self):
         vectorizer = CountVectorizer()
