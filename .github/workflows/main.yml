@@ -55,8 +55,8 @@ jobs:
         # Build 
         docker compose -f docker-compose.yml build
         # Tag and push the backend image
-        docker tag anime-recommender-flask-backend:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}/flask-backend:${IMAGE_TAG}
-        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}/flask-backend:${IMAGE_TAG}
+        docker tag anime-recommender-flask-backend:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}/anime-recommender-flask-backend:${IMAGE_TAG}
+        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}/anime-recommender-flask-backend:${IMAGE_TAG}
         # Tag and push the frontend image
-        docker tag anime-recommender-frontend:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}/frontend:${IMAGE_TAG}
-        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}/frontend:${IMAGE_TAG}
+        docker tag anime-recommender-frontend:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}/anime-recommender-frontend:${IMAGE_TAG}
+        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}/anime-recommender-frontend:${IMAGE_TAG}
