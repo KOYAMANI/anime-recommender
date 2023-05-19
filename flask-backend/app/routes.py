@@ -1,38 +1,36 @@
-from flask import request
+from flask import Blueprint, request, jsonify
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 
-from cf_recommender import CFRecommender
-from cb_recommender import CBRecommender
-from api_handler import APIHandler
-from mal_handler import MalHandler
-from dataset_handler import DatasetHandler
+from .cf_recommender import CFRecommender
+from .cb_recommender import CBRecommender
+from .api_handler import APIHandler
+from .mal_handler import MalHandler
+from .dataset_handler import DatasetHandler
 from markupsafe import escape
-
-from factory import create_app, db
-
-app = create_app()
-
 import json
+
+
+bp = Blueprint("routes", __name__)
+
 
 load_dotenv()
 
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-app.config["CORS_HEADERS"] = "Content-Type"
+cors = CORS(bp, resources={r"/api/*": {"origins": "*"}})
 
-cb_recommender = CBRecommender(app)
-mal_handler = MalHandler(app)
-dataset_handler = DatasetHandler(app)
-api_handler = APIHandler(app)
+cb_recommender = CBRecommender()
+mal_handler = MalHandler()
+dataset_handler = DatasetHandler()
+api_handler = APIHandler()
 
 
-@app.route("/", methods=["GET"])
+@bp.route("/", methods=["GET"])
 @cross_origin()
 def hello():
     return json.loads('{"message": "Hello World!"}')
 
 
-@app.route("/api/image", methods=["POST"])
+@bp.route("/api/image", methods=["POST"])
 @cross_origin()
 def get_image():
     content_type = request.headers.get("Content-Type")
@@ -52,7 +50,7 @@ def get_image():
 
 
 # TODO: Decide which recommender to use and activate either one
-@app.route("/api/anime", methods=["POST"])
+@bp.route("/api/anime", methods=["POST"])
 @cross_origin()
 def rec_with_image():
     if request.headers.get("Content-Type") != "application/json":
@@ -77,7 +75,7 @@ def rec_with_image():
         return json.loads('{"message": "Anime not found!"}')
 
 
-@app.route("/api/suggestions", methods=["POST"])
+@bp.route("/api/suggestions", methods=["POST"])
 @cross_origin()
 def get_suggestions():
     if request.headers.get("Content-Type") != "application/json":
@@ -93,7 +91,7 @@ def get_suggestions():
         return json.loads('{"message": "Anime not found!"}')
 
 
-@app.route("/api/v2/anime", methods=["POST"])
+@bp.route("/api/v2/anime", methods=["POST"])
 @cross_origin()
 def get_anime_v2():
     if request.headers.get("Content-Type") != "application/json":
@@ -109,7 +107,7 @@ def get_anime_v2():
         return json.loads('{"message": "Anime not found!"}')
 
 
-@app.route("/api/v2/anime/image/<id>", methods=["POST"])
+@bp.route("/api/v2/anime/image/<id>", methods=["POST"])
 @cross_origin()
 def get_image_v2(id):
     # if request.headers.get("Content-Type") != "application/json":
@@ -123,7 +121,7 @@ def get_image_v2(id):
         return json.loads('{"message": "Anime not found!"}')
 
 
-# @app.route('/api/anime/rec', methods=['POST'])
+# @bp.route('/api/anime/rec', methods=['POST'])
 # @cross_origin()
 # def rec_with_image():
 #     content_type = request.headers.get('Content-Type')
@@ -149,6 +147,3 @@ def get_image_v2(id):
 #             return 'Method not supported!'
 #     else:
 #         return 'Content-Type not supported!'
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)

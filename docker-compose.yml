@@ -10,18 +10,6 @@ services:
   flask-backend:
     build: 
       context: ./flask-backend
-      args:
-        FLASK_ENV: production
+      dockerfile: Dockerfile.prod
     ports:
       - "8080:8080"
-
-  # postgres-db:
-  #   image: postgres:13.4-alpine
-  #   environment:
-  #     POSTGRES_USER: admin
-  #     POSTGRES_PASSWORD: adminpw
-  #     POSTGRES_DB: animerec
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - ./postgres-db/init.sql:/docker-entrypoint-initdb.d/init.sql

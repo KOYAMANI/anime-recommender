@@ -2,21 +2,20 @@ import pandas as pd
 import json
 import re
 from os.path import join, dirname, realpath
-from models.anime_data import AnimeData
-from models.anime_name import AnimeName
+from .models.anime_data import AnimeData
+from .models.anime_name import AnimeName
 from flask import current_app
 
 
 class DatasetHandler:
-    def __init__(self, app):
-        self.app = app
-        self.ANIME_DATASET = self.load_anime_data()
-        # self.ANIME_NAME_DATASET = self.load_anime_name()
+    def __init__(self):
+        pass
 
     def load_anime_data(self):
-        with self.app.app_context():
+        with current_app.app_context():
             anime_data = AnimeData.query.all()
             anime_df = pd.DataFrame([anime.to_dict() for anime in anime_data])
+            print(anime_df.head(5))
             return anime_df
 
     # def load_anime_name(self):
@@ -26,18 +25,19 @@ class DatasetHandler:
     #         return anime_name_df
 
     def get_anime_id(self, title):
+        ANIME_DATASET = self.load_anime_data()
         try:
-            anime_id = self.ANIME_DATASET[self.ANIME_DATASET["Name"] == title][
-                "MAL_ID"
-            ].values[0]
+            anime_id = ANIME_DATASET[ANIME_DATASET["Name"] == title]["MAL_ID"].values[0]
+            print("anime_id", anime_id)
             return anime_id
         except IndexError:
             return -1
 
     def search_anime_titles(self, query, limit=10):
+        ANIME_DATASET = self.load_anime_data()
         query_regex = r"\b" + re.escape(query)
-        matching_titles = self.ANIME_DATASET[
-            self.ANIME_DATASET["Name"].apply(
+        matching_titles = ANIME_DATASET[
+            ANIME_DATASET["Name"].apply(
                 lambda title: re.search(query_regex, title, re.IGNORECASE) is not None
             )
         ]["Name"]

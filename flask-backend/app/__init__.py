@@ -2,8 +2,8 @@ import os
 import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from .database import db
+from .routes import bp
 
 
 def create_app():
@@ -35,7 +35,9 @@ def create_app():
 
     app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     logger.info(f"Application starting on {env} environment")
+    app.config["CORS_HEADERS"] = "Content-Type"
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
+    app.register_blueprint(bp)
     return app

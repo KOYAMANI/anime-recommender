@@ -6,8 +6,7 @@ from flask import current_app
 
 
 class APIHandler:
-    def __init__(self, app):
-        self.app = app
+    def __init__(self):
         # example api.jikan.moe/v4/anime?q=Jujutsu kaisen&sfw&type=TV&status=complete
         self.API_URL = "https://api.jikan.moe/v4/anime/"
 

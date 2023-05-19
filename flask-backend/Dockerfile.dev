@@ -1,9 +1,8 @@
 FROM python:3.9.12
-ARG FLASK_ENV
+ENV FLASK_ENV=development
+ENV FLASK_APP=app:create_app()
 
-ENV FLASK_ENV=$FLASK_ENV
-
-WORKDIR /app/app
+WORKDIR /app
 
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
