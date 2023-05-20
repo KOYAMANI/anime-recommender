@@ -12,51 +12,66 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin
-        role-skip-session-tagging: true
-        role-duration-seconds: 14400
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin
+          role-skip-session-tagging: true
+          role-duration-seconds: 14400
 
-    - name: Use default docker context
-      run: |
-        docker context use default
-      shell: bash
+      - name: Use default docker context
+        run: |
+          docker context use default
+        shell: bash
 
-    - name: Checkout latest repo
-      uses: actions/checkout@master
+      - name: Checkout latest repo
+        uses: actions/checkout@master
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Set environment variables
-      run: |
-        echo "REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
-        echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-        echo "AWS_ROLE_ID=${{ secrets.AWS_ROLE_ID }}" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-        echo "MAL_API_URL=${{ secrets.MAL_API_URL }}" >> $GITHUB_ENV
-        echo "SQLALCHEMY_DATABASE_URI_PROD=${{ secrets.SQLALCHEMY_DATABASE_URI_PROD }}" >> $GITHUB_ENV
-        echo "X_MAL_CLIENT_ID=${{ secrets.X_MAL_CLIENT_ID }}" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
+          echo "REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_ROLE_ID=${{ secrets.AWS_ROLE_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "MAL_API_URL=${{ secrets.MAL_API_URL }}" >> $GITHUB_ENV
+          echo "SQLALCHEMY_DATABASE_URI_PROD=${{ secrets.SQLALCHEMY_DATABASE_URI_PROD }}" >> $GITHUB_ENV
+          echo "X_MAL_CLIENT_ID=${{ secrets.X_MAL_CLIENT_ID }}" >> $GITHUB_ENV
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: anime-recommender
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker compose -f docker-compose.yml pull --ignore-pull-failures --include-deps
-        # Build 
-        docker compose -f docker-compose.yml build
-        # Tag and push the backend image
-        docker tag anime-recommender-flask-backend:latest ${ECR_REGISTRY}/anime-recommender-backend:${IMAGE_TAG}
-        docker push ${ECR_REGISTRY}/anime-recommender-backend:${IMAGE_TAG}
-        # Tag and push the frontend image
-        docker tag anime-recommender-frontend:latest ${ECR_REGISTRY}/anime-recommender-frontend:${IMAGE_TAG}
-        docker push ${ECR_REGISTRY}/anime-recommender-frontend:${IMAGE_TAG}
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker compose -f docker-compose.yml pull --ignore-pull-failures --include-deps
+          # Build 
+          docker compose -f docker-compose.yml build
+          # Tag and push the backend image
+          docker tag anime-recommender-flask-backend:latest ${ECR_REGISTRY}/anime-recommender-backend:${IMAGE_TAG}
+          docker push ${ECR_REGISTRY}/anime-recommender-backend:${IMAGE_TAG}
+          # Tag and push the frontend image
+          docker tag anime-recommender-frontend:latest ${ECR_REGISTRY}/anime-recommender-frontend:${IMAGE_TAG}
+          docker push ${ECR_REGISTRY}/anime-recommender-frontend:${IMAGE_TAG}
+
+      - name: Deploy Backend to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: backend-task-definition.json
+          service: backend-service
+          cluster: anime-recommender-app
+          image: "${{ steps.login-ecr.outputs.registry }}/anime-recommender-backend:${{ github.sha }}"
+
+      - name: Deploy Frontend to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: frontend-task-definition.json
+          service: frontend-service
+          cluster: anime-recommender-app
+          image: "${{ steps.login-ecr.outputs.registry }}/anime-recommender-frontend:${{ github.sha }}"
