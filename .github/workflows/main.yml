@@ -62,8 +62,8 @@ jobs:
 
       - name: Prepare task definition
         run: |
-          sed -e "s|<IMAGE>|${{ steps.login-ecr.outputs.registry }}/anime-recommender-backend:${{ github.sha }}|;s|<EXECUTION_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<TASK_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|" flask-backend/task-definition-template.json > .github/workflows/backend-task-definition.json
-          sed -e "s|<IMAGE>|${{ steps.login-ecr.outputs.registry }}/anime-recommender-frontend:${{ github.sha }}|;s|<EXECUTION_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<TASK_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|" frontend/task-definition-template.json > .github/workflows/frontend-task-definition.json
+          sed -e "s|<EXECUTION_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<TASK_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|" flask-backend/task-definition-template.json > .github/workflows/backend-task-definition.json
+          sed -e "s|<EXECUTION_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<TASK_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|" frontend/task-definition-template.json > .github/workflows/frontend-task-definition.json
 
       - name: Deploy Backend to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

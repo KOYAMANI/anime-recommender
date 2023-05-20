@@ -6,7 +6,6 @@
     "containerDefinitions": [
       {
         "name": "webserver",
-        "image": "<IMAGE>",
         "portMappings": [
           {
             "containerPort": 80,
