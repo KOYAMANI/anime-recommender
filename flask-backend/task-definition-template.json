@@ -23,15 +23,15 @@
         "secrets": [
           {
             "name": "MAL_API_URL",
-            "valueFrom": "<MAL_API_URL>"
+            "valueFrom": "arn:aws:secretsmanager:eu-central-1:588729807438:secret:anime-recommender/backend-LUaLJ1"
           },
           {
             "name": "X_MAL_CLIENT_ID",
-            "valueFrom": "<X_MAL_CLENT_ID>"
+            "valueFrom": "arn:aws:secretsmanager:eu-central-1:588729807438:secret:anime-recommender/backend-LUaLJ1"
           },
           {
             "name": "SQLALCHEMY_DATABASE_URI_PROD",
-            "valueFrom": "<SQLALCHEMY_DATABASE_URI_PROD>"
+            "valueFrom": "arn:aws:secretsmanager:eu-central-1:588729807438:secret:anime-recommender/backend-LUaLJ1"
           }
         ],
         "logConfiguration": {
