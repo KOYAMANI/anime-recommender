@@ -1,0 +1,31 @@
+{
+    "family": "webserver",
+    "executionRoleArn": "<EXECUTION_ROLE_ARN>",
+    "taskRoleArn": "<TASK_ROLE_ARN>",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+      {
+        "name": "webserver",
+        "image": "<IMAGE>",
+        "portMappings": [
+          {
+            "containerPort": 80,
+            "protocol": "tcp"
+          }
+        ],
+        "essential": true,
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "anime-recommender-frontend-log",
+            "awslogs-region": "eu-central-1",
+            "awslogs-stream-prefix": "webserver"
+          }
+        }
+      }
+    ],
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "512",
+    "memory": "2GB"
+  }
+  
