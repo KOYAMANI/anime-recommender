@@ -1,0 +1,49 @@
+{
+    "family": "webserver",
+    "executionRoleArn": "<EXECUTION_ROLE_ARN>",
+    "taskRoleArn": "<TASK_ROLE_ARN>",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+      {
+        "name": "webserver",
+        "image": "<IMAGE>",
+        "portMappings": [
+          {
+            "containerPort": 8080,
+            "protocol": "tcp"
+          }
+        ],
+        "essential": true,
+        "environment": [
+          {
+            "name": "FLASK_ENV",
+            "value": "production"
+          },
+          {
+            "name": "MAL_API_URL",
+            "valueFrom": "<MAL_API_URL>"
+          },
+          {
+            "name": "X_MAL_CLIENT_ID",
+            "valueFrom": "<X_MAL_CLENT_ID>"
+          },
+          {
+            "name": "SQLALCHEMY_DATABASE_URI_PROD",
+            "valueFrom": "<SQLALCHEMY_DATABASE_URI_PROD>"
+          }
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "anime-recommender-backend-log",
+            "awslogs-region": "eu-central-1",
+            "awslogs-stream-prefix": "webserver"
+          }
+        }
+      }
+    ],
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "512",
+    "memory": "2GB"
+  }
+  
