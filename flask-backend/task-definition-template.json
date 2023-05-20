@@ -18,7 +18,9 @@
           {
             "name": "FLASK_ENV",
             "value": "production"
-          },
+          }
+        ],
+        "secrets": [
           {
             "name": "MAL_API_URL",
             "valueFrom": "<MAL_API_URL>"
