@@ -14,7 +14,7 @@ docker-compose -f docker-compose.dev.yml up --build
 ### For production
 
 ```
-docker-compose up --build
+docker-compose -f docker-compose.yml up --build
 ```
 
 ## Dataset
