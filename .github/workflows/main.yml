@@ -62,8 +62,8 @@ jobs:
 
       - name: Prepare task definition
         run: |
-          sed -e "s|<IMAGE>|${{ steps.login-ecr.outputs.registry }}/anime-recommender-backend:${{ github.sha }}|;s|<EXECUTION_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<TASK_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<MAL_API_URL>|https://api.myanimelist.net/v2/anime/|;s|<X_MAL_CLIENT_ID>|${{ secrets.X_MAL_CLIENT_ID }}|;s|<SQLALCHEMY_DATABASE_URL_PROD>|postgresql://${{secrets.RDS_USERNAME}}:${{secrets.RDS_PASSWORD}}@${{secrets.RDS_HOSTNAME}}:5432/postgres|" flask-backend/task-definition-template.json > backend-task-definition.json
-          sed -e "s|<IMAGE>|${{ steps.login-ecr.outputs.registry }}/anime-recommender-frontend:${{ github.sha }}|;s|<EXECUTION_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<TASK_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|" frontend/task-definition-template.json > frontend-task-definition.json
+          sed -e "s|<IMAGE>|${{ steps.login-ecr.outputs.registry }}/anime-recommender-backend:${{ github.sha }}|;s|<EXECUTION_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<TASK_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<MAL_API_URL>|https://api.myanimelist.net/v2/anime/|;s|<X_MAL_CLIENT_ID>|${{ secrets.X_MAL_CLIENT_ID }}|;s|<SQLALCHEMY_DATABASE_URL_PROD>|postgresql://${{secrets.RDS_USERNAME}}:${{secrets.RDS_PASSWORD}}@${{secrets.RDS_HOSTNAME}}:5432/postgres|" flask-backend/task-definition-template.json > .github/workflows/backend-task-definition.json
+          sed -e "s|<IMAGE>|${{ steps.login-ecr.outputs.registry }}/anime-recommender-frontend:${{ github.sha }}|;s|<EXECUTION_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|;s|<TASK_ROLE_ARN>|arn:aws:iam::${{ secrets.AWS_ROLE_ID }}:role/roleAdmin|" frontend/task-definition-template.json > .github/workflows/frontend-task-definition.json
 
       - name: Deploy Backend to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
