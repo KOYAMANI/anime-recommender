@@ -1,11 +1,11 @@
 {
-    "family": "webserver",
+    "family": "backend-task",
     "executionRoleArn": "<EXECUTION_ROLE_ARN>",
     "taskRoleArn": "<TASK_ROLE_ARN>",
     "networkMode": "awsvpc",
     "containerDefinitions": [
       {
-        "name": "webserver",
+        "name": "backend-task",
         "image": "<IMAGE>",
         "portMappings": [
           {
@@ -39,7 +39,7 @@
           "options": {
             "awslogs-group": "anime-recommender-backend-log",
             "awslogs-region": "eu-central-1",
-            "awslogs-stream-prefix": "webserver"
+            "awslogs-stream-prefix": "backend-task"
           }
         }
       }

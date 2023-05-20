@@ -1,11 +1,11 @@
 {
-    "family": "webserver",
+    "family": "frontend-task",
     "executionRoleArn": "<EXECUTION_ROLE_ARN>",
     "taskRoleArn": "<TASK_ROLE_ARN>",
     "networkMode": "awsvpc",
     "containerDefinitions": [
       {
-        "name": "webserver",
+        "name": "frontend-task",
         "image": "<IMAGE>",
         "portMappings": [
           {
@@ -19,7 +19,7 @@
           "options": {
             "awslogs-group": "anime-recommender-frontend-log",
             "awslogs-region": "eu-central-1",
-            "awslogs-stream-prefix": "webserver"
+            "awslogs-stream-prefix": "frontend-task"
           }
         }
       }
