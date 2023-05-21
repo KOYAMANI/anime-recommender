@@ -67,12 +67,12 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: .github/workflows/backend-task-definition.json
-          service: backend-service
+          service: backend
           cluster: anime-recommender
 
       - name: Deploy Frontend to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: .github/workflows/frontend-task-definition.json
-          service: frontend-service
+          service: frontend
           cluster: anime-recommender
