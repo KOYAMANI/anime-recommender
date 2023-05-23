@@ -2,6 +2,7 @@ import os
 import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from .database import db
 from .routes import bp
 
@@ -17,11 +18,12 @@ def create_app():
         "development": "SQLALCHEMY_DATABASE_URI_DEV",
     }
 
-    env = os.getenv("FLASK_ENV")
+    debug = os.getenv("FLASK_DEBUG")
+    env = "production" if debug == False else "development"
 
     try:
         if env not in config:
-            raise ValueError(f"Invalid FLASK_ENV: {env}")
+            raise ValueError(f"Invalid FLASK_DEBUG: {env}")
 
         db_uri_env = config[env]
         db_uri = os.getenv(db_uri_env)
@@ -34,10 +36,13 @@ def create_app():
         raise
 
     app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
-    logger.info(f"Application starting on {env} environment")
-    app.config["CORS_HEADERS"] = "Content-Type"
 
+    app.config["CORS_HEADERS"] = "Content-Type"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    logger.info(f"Application starting on {env} environment")
+
     db.init_app(app)
     app.register_blueprint(bp)
+
     return app

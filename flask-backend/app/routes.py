@@ -1,15 +1,17 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
-
+from werkzeug.security import generate_password_hash, check_password_hash
 from .cf_recommender import CFRecommender
 from .cb_recommender import CBRecommender
 from .api_handler import APIHandler
 from .mal_handler import MalHandler
 from .dataset_handler import DatasetHandler
+from .models.user import User
 from markupsafe import escape
 import json
 
+from app import db
 
 bp = Blueprint("routes", __name__)
 
@@ -28,6 +30,44 @@ api_handler = APIHandler()
 @cross_origin()
 def hello():
     return json.loads('{"message": "Hello World!"}')
+
+@bp.route("/api/sign-up", methods=["POST"])
+@cross_origin()
+def sign_up():
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not all([name, email, password]):
+        return jsonify({"error": "Name, email and password are required"}), 400
+
+    user = User.query.filter((User.email == email) | (User.name == name)).first()
+    if user:
+        return jsonify({"error": "User with this email or name already exists"}), 400
+
+    hashed_password = generate_password_hash(password)
+    new_user = User(name=name, email=email, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify(new_user.to_dict()), 201
+
+@bp.route("/api/log-in", methods=["POST"])
+@cross_origin()
+def log_in():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    if not all([email, password]):
+        return jsonify({"error": "Email and password are required"}), 400
+
+    user = User.query.filter((User.email == email)).first()
+    if user and check_password_hash(user.password, password):
+        return jsonify(user.to_dict()), 200
+    else:
+        return jsonify({"error": "Invalid username or password"}), 400
 
 
 @bp.route("/api/image", methods=["POST"])
@@ -105,6 +145,13 @@ def get_anime_v2():
         return res
     except KeyError:
         return json.loads('{"message": "Anime not found!"}')
+    
+@bp.route("/api/v2/anime/name", methods=["GET"])
+@cross_origin()
+def get_anime_name_v2():
+    df = dataset_handler.load_anime_name()
+    res  = df.head(5)
+    return res.to_json()
 
 
 @bp.route("/api/v2/anime/image/<id>", methods=["POST"])

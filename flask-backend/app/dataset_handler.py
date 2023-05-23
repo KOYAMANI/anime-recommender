@@ -14,15 +14,17 @@ class DatasetHandler:
     def load_anime_data(self):
         with current_app.app_context():
             anime_data = AnimeData.query.all()
+            test = AnimeName.query.filter((AnimeData.Name=='Naruto')).first()
+            print(test)
             anime_df = pd.DataFrame([anime.to_dict() for anime in anime_data])
             print(anime_df.head(5))
             return anime_df
 
-    # def load_anime_name(self):
-    #     with self.app.app_context():
-    #         anime_name_data = AnimeName.query.all()
-    #         anime_name_df = pd.DataFrame([anime_name.to_dict() for anime_name in anime_name_data])
-    #         return anime_name_df
+    def load_anime_name(self):
+        with current_app.app_context():
+            anime_name_data = AnimeName.query.all()
+            anime_name_df = pd.DataFrame([anime_name.to_dict() for anime_name in anime_name_data])
+            return anime_name_df
 
     def get_anime_id(self, title):
         ANIME_DATASET = self.load_anime_data()

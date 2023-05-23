@@ -4,6 +4,7 @@ from app import db
 
 
 class AnimeData(db.Model):
+    __tablename__ = "anime_data"
     # TODO: rename db column name to snake case instead of camel case with space
     MAL_ID = db.Column(db.Integer, primary_key=True)
     Name = db.Column(db.String(255), nullable=False)

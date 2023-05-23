@@ -16,8 +16,8 @@
         "essential": true,
         "environment": [
           {
-            "name": "FLASK_ENV",
-            "value": "production"
+            "name": "FLASK_DEBUG",
+            "value": false
           }
         ],
         "secrets": [

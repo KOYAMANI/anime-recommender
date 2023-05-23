@@ -1,5 +1,5 @@
 FROM python:3.9.12
-ENV FLASK_ENV=production
+ENV FLASK_DEBUG=False
 ENV FLASK_APP=app:create_app()
 
 WORKDIR /app
