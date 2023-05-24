@@ -14,12 +14,6 @@
           }
         ],
         "essential": true,
-        "environment": [
-          {
-            "name": "FLASK_DEBUG",
-            "value": false
-          }
-        ],
         "secrets": [
           {
             "name": "SECRETS_JSON",
