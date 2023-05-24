@@ -14,7 +14,7 @@ def create_app():
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
-    debug = os.getenv("FLASK_DEBUG")
+    debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
     env = "production" if debug == False else "development"
 
     secrets_json = os.getenv("SECRETS_JSON")
