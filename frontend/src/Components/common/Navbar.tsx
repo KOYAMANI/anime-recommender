@@ -8,13 +8,16 @@ import { logout } from '../../redux/slices/authSlice'
 
 const Navbar: React.FC = () => {
     const [token, setToken] = useState('')
+    const [username, setUsername] = useState('')
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
     useEffect(() => {
         const token = localStorage.getItem('token')
+        const username = localStorage.getItem('username')
         if (token) setToken(token)
+        if (username) setUsername(username)
     }, [dispatch])
 
     const logOutHandler = () => {
@@ -44,6 +47,11 @@ const Navbar: React.FC = () => {
                             />
                         </Link>
                     ) : null}
+                </div>
+                <div>
+                  {username ? (
+                      <p className="text-s">username:{username}</p>
+                  ) : null}
                 </div>
             </div>
         </nav>

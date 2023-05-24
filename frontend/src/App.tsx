@@ -6,7 +6,7 @@ import Main from './Pages/Main'
 import Signup from './Pages/Signup'
 import User from './Pages/User'
 import Login from './Pages/Login'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { login } from './redux/slices/authSlice'
 
 const App = () => {

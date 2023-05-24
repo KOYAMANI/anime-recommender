@@ -1,6 +1,6 @@
 export default class APIService {
     async getHello() {
-        const res = await fetch('http://localhost:8080/', {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/`, {
             method: 'GET',
             headers: {
                 cors: 'no-cors',
@@ -13,7 +13,7 @@ export default class APIService {
     }
 
     async getRecommendation(title: string) {
-        const res = await fetch(`http://localhost:8080/api/anime`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/anime`, {
             method: 'POST',
             headers: {
                 cors: 'no-cors',
@@ -28,7 +28,7 @@ export default class APIService {
     }
 
     async getSuggestions(title: string) {
-        const res = await fetch(`http://localhost:8080/api/suggestions`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/suggestions`, {
             method: 'POST',
             headers: {
                 cors: 'no-cors',
@@ -43,7 +43,7 @@ export default class APIService {
     }
 
     async user_signup(name: string, email: string, password: string) {
-        const res = await fetch(`http://localhost:8080/api/signup`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/signup`, {
             method: 'POST',
             headers: {
                 cors: 'no-cors',
@@ -61,7 +61,7 @@ export default class APIService {
     }
 
     async user_login(email: string, password: string) {
-        const res = await fetch(`http://localhost:8080/api/login`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/login`, {
             method: 'POST',
             headers: {
                 cors: 'no-cors',
@@ -99,7 +99,7 @@ export default class APIService {
         } else {
             // Exchange the authorization code for an access token
             const res = await fetch(
-                'http://localhost:8080/api/log-in-with-mal',
+                '${process.env.REACT_APP_API_URL}api/log-in-with-mal',
                 {
                     method: 'POST',
                     headers: {

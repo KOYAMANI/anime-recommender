@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { CiUnread, CiRead } from 'react-icons/ci'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
 import { login } from '../redux/slices/authSlice'
 import APIService from '../Components/APIService'
-import RootState from '../redux/rootState'
 
 const Signup: React.FC = () => {
     const [email, setEmail] = useState('')

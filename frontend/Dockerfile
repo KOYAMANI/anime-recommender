@@ -1,6 +1,7 @@
 # anime_recommender/frontend/Dockerfile
 ARG NODE_IMAGE=node:14.18.3
-ARG TARGET_STAGE=production
+ARG TARGET_STAGE
+ARG REACT_APP_API_URL
 
 # TARGET: builder
 FROM $NODE_IMAGE AS builder
@@ -11,7 +12,7 @@ COPY package.json .
 RUN npm install
 
 COPY . .
-RUN npm run build
+RUN REACT_APP_API_URL=$REACT_APP_API_URL npm run build
 
 # TARGET: development
 FROM $NODE_IMAGE AS development

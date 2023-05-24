@@ -41,6 +41,7 @@ jobs:
           echo "MAL_API_URL=${{ secrets.MAL_API_URL }}" >> $GITHUB_ENV
           echo "SQLALCHEMY_DATABASE_URI_PROD=${{ secrets.SQLALCHEMY_DATABASE_URI_PROD }}" >> $GITHUB_ENV
           echo "X_MAL_CLIENT_ID=${{ secrets.X_MAL_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> $GITHUB_ENV
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
