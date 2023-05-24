@@ -14,12 +14,6 @@
           }
         ],
         "essential": true,
-        "secrets": [
-          {
-            "name": "REACT_APP_API_URL",
-            "valueFrom": "arn:aws:secretsmanager:eu-central-1:588729807438:secret:anime-recommender/frontend-6XHGXD"
-          }
-        ],
         "logConfiguration": {
           "logDriver": "awslogs",
           "options": {
