@@ -30,7 +30,7 @@ dataset_handler = DatasetHandler()
 api_handler = APIHandler()
 
 
-@bp.route("/api/", methods=["GET"])
+@bp.route("/api", methods=["GET"])
 @cross_origin()
 def hello():
     return json.loads('{"message": "Hello World!"}')
