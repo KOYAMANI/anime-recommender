@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { CiUnread, CiRead } from 'react-icons/ci'; 
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../redux/slices/authSlice';
+import { AuthState, login } from '../redux/slices/authSlice';
 import APIService from '../Components/APIService';
 
 const Signup: React.FC = () => {
@@ -13,9 +13,15 @@ const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const apiService = new APIService();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const token = useSelector((state: AuthState) => state.auth.token);
+  
+  if (token) {
+    navigate('/home');
+  }
+
+  const apiService = new APIService();
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
