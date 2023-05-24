@@ -1,15 +1,23 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const User: React.FC = () => {
-  const username = "John Doe"; // Get this from your auth state or context
+    const [username, setUsername] = useState('')
+    const navigate = useNavigate()
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-      <h1 className="text-3xl mb-4">User</h1>
-      <p>Welcome, {username}</p>
-    </div>
-  );
-};
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        const username = localStorage.getItem('username')
+        if (token && username) setUsername(username)
+        else navigate('/login')
+    }, [navigate])
 
-export default User;
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
+            <h1 className="text-3xl mb-4">My Account</h1>
+            <p>Welcome, {username}</p>
+        </div>
+    )
+}
+
+export default User

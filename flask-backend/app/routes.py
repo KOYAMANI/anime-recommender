@@ -10,6 +10,9 @@ from .dataset_handler import DatasetHandler
 from .models.user import User
 from markupsafe import escape
 from flask_jwt_extended import create_access_token
+import requests
+import random
+import string
 import json
 
 from app import db
@@ -33,7 +36,7 @@ def hello():
     return json.loads('{"message": "Hello World!"}')
 
 
-@bp.route("/api/sign-up", methods=["POST"])
+@bp.route("/api/signup", methods=["POST"])
 @cross_origin()
 def sign_up():
     data = request.get_json()
@@ -61,7 +64,7 @@ def sign_up():
     return jsonify(access_token=access_token, username=name), 200
 
 
-@bp.route("/api/log-in", methods=["POST"])
+@bp.route("/api/login", methods=["POST"])
 @cross_origin()
 def log_in():
     data = request.get_json()
@@ -77,6 +80,60 @@ def log_in():
 
     access_token = create_access_token(identity=user.id)
     return jsonify(access_token=access_token, username=user.name), 200
+
+
+@bp.route("/login-with-mal", methods=["POST"])
+@cross_origin()
+def login_with_mal():
+    # Get the code and code_verifier from the request body
+    code = request.json.get("code")
+    code_verifier = request.json.get("code_verifier")
+
+    # Make sure the code and code_verifier are present
+    if not code or not code_verifier:
+        return (
+            jsonify({"error": "Authorization code or code verifier not provided"}),
+            400,
+        )
+
+    # Define the parameters for the token request
+    data = {
+        "client_id": "8056142dda9413a4411028bdbdb2541a",
+        "client_secret": "791a1f95b94b4c994208be84a8b93da3cdb87c64acac469b9de9d1309e29e64b",
+        "code": code,
+        "redirect_uri": "http://localhost:3000/callback",
+        "code_verifier": code_verifier,
+    }
+
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+    # Make the token request
+    response = requests.post(
+        "https://myanimelist.net/v1/oauth2/token", data=data, headers=headers
+    )
+
+    # Make sure the request was successful
+    if response.status_code != 200:
+        return jsonify({"error": "Failed to exchange code for token"}), 500
+
+    # Extract the access token from the response
+    access_token = response.json().get("access_token")
+
+    if not access_token:
+        return jsonify({"error": "Failed to obtain access token"}), 500
+
+    # Return the access token
+    return jsonify({"access_token": access_token})
+
+
+# Generate a code verifier
+@bp.route("/api/generate-code-verifier", methods=["GET"])
+@cross_origin()
+def generate_code_verifier():
+    code_verifier = "".join(
+        random.choice(string.ascii_letters + string.digits) for _ in range(128)
+    )
+    return jsonify({"code_verifier": code_verifier})
 
 
 @bp.route("/api/image", methods=["POST"])
