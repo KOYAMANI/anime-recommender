@@ -1,21 +1,27 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 import Navbar from './Components/common/Navbar';
 import Main from './Pages/Main';
 import Signup from './Pages/Signup';
 import User from './Pages/User';
+import Login from './Pages/Login';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/user" element={<User />} />
-      </Routes>
-      </div>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <div className="App">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />   
+          <Route path="/user" element={<User />} />
+        </Routes>
+        </div>
+      </Router>
+    </Provider>
   );
 }
 

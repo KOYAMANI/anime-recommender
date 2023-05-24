@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 const User: React.FC = () => {
   const username = "John Doe"; // Get this from your auth state or context

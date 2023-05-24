@@ -14,10 +14,7 @@ class DatasetHandler:
     def load_anime_data(self):
         with current_app.app_context():
             anime_data = AnimeData.query.all()
-            test = AnimeName.query.filter((AnimeData.Name=='Naruto')).first()
-            print(test)
             anime_df = pd.DataFrame([anime.to_dict() for anime in anime_data])
-            print(anime_df.head(5))
             return anime_df
 
     def load_anime_name(self):

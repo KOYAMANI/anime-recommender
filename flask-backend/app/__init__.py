@@ -2,7 +2,7 @@ import os
 import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 from .database import db
 from .routes import bp
 
@@ -36,13 +36,14 @@ def create_app():
         raise
 
     app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
-
     app.config["CORS_HEADERS"] = "Content-Type"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["JWT_SECRET_KEY"] = "super-secret"  # TODO: store the secret in env
 
     logger.info(f"Application starting on {env} environment")
 
     db.init_app(app)
+    jwt = JWTManager(app)
     app.register_blueprint(bp)
 
     return app

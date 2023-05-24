@@ -1,5 +1,5 @@
 import React from 'react';
-import { CiHome, CiUser } from "react-icons/ci";
+import { CiHome, CiUser, CiLogout } from "react-icons/ci";
 import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
@@ -15,6 +15,7 @@ const Navbar: React.FC = () => {
         <Link to="/signup">
           <CiUser className="text-2xl" />
         </Link>
+        <CiLogout className="text-2xl" />
       </div>
     </nav>
   );

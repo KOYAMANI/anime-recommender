@@ -24,19 +24,22 @@ const Main: React.FC = () => {
     const handleChange = (event: any) => {
         setTitle(event.target.value);
         if (event.target.value !== '') {
-        setSearchResults([]);
-        setError('');
-        apiService
-            .getSuggestions(event.target.value)
-            .then((res) => {
-            setSearchResults(res.data);
-            setIsLoading(false);
-            setShowSuggestions(true);
-            })
-            .catch((err) => setError(err));
+            setSearchResults([]);
+            setError('');
+            apiService
+                .getSuggestions(event.target.value)
+                .then((res) => {
+                    setSearchResults(res.data);
+                    setIsLoading(false);
+                    setShowSuggestions(true);
+                })
+                .catch((err) => {
+                    console.error(err);
+                    setError(err.message || 'An unexpected error occurred');
+                });
         } else {
-        setSearchResults([]);
-        setShowSuggestions(false);
+            setSearchResults([]);
+            setShowSuggestions(false);
         }
     };
 
