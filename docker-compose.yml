@@ -7,8 +7,6 @@ services:
       args:
         TARGET_STAGE: production
         REACT_APP_API_URL: anirec-load-balancer-1590555672.eu-central-1.elb.amazonaws.com/
-    env_file:
-      - ./frontend/.env.prod
     ports:
       - "80:80"
 
