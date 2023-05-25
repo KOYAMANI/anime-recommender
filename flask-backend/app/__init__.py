@@ -29,7 +29,6 @@ def create_app():
         app.config["SQLALCHEMY_DATABASE_URI"] = secrets["SQLALCHEMY_DATABASE_URI_PROD"]
         app.config["X_MAL_CLIENT_ID"] = secrets["X_MAL_CLIENT_ID"]
         app.config["MAL_API_URL"] = secrets["MAL_API_URL"]
-        print(secrets["SQLALCHEMY_DATABASE_URI_PROD"])
         logger.info(f"Application starting on Production environment")
 
     app.config["CORS_HEADERS"] = "Content-Type"

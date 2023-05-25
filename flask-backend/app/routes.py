@@ -24,9 +24,6 @@ load_dotenv()
 
 cors = CORS(bp, resources={r"/api/*": {"origins": "*"}})
 
-# cb_recommender = CBRecommender()
-# mal_handler = MalHandler()
-# dataset_handler = DatasetHandler()
 api_handler = APIHandler()
 
 

@@ -20,13 +20,11 @@ class DatasetHandler:
         pass
 
     def load_anime_data(self):
-        # with current_app.app_context():
         anime_data = AnimeData.query.all()
         anime_df = pd.DataFrame([anime.to_dict() for anime in anime_data])
         return anime_df
 
     def load_anime_name(self):
-        # with current_app.app_context():
         anime_name_data = AnimeName.query.all()
         anime_name_df = pd.DataFrame(
             [anime_name.to_dict() for anime_name in anime_name_data]

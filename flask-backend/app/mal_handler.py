@@ -17,8 +17,8 @@ class MalHandler:
 
     def __init__(self):
         self.dataset_handler = DatasetHandler()
-        self.MAL_API_URL = os.getenv("MAL_API_URL")
-        self.X_MAL_CLIENT_ID = os.getenv("X_MAL_CLIENT_ID")
+        self.MAL_API_URL = os.environ.get("MAL_API_URL")
+        self.X_MAL_CLIENT_ID = os.environ.get("X_MAL_CLIENT_ID")
 
     def get_connection(self):
         url = self.MAL_API_URL
