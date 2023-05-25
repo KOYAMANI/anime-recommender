@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { CiHome, CiUser, CiLogout } from 'react-icons/ci'
 import { Link } from 'react-router-dom'
-import RootState from '../../redux/rootState'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../redux/slices/authSlice'

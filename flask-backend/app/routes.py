@@ -174,7 +174,7 @@ def rec_with_image():
         res = [
             {
                 "title": title,
-                "image_url": mal_handler.get_anime_image(title)["medium"],
+                "image_url": mal_handler.get_anime_image(title)["large"],
             }
             for title in anime_titles
         ]

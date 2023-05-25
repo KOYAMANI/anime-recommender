@@ -16,19 +16,19 @@ const ResultContainer: React.FC<ResultContainerProps> = ({
     animes,
 }) => {
     return (
-        <div className="w-3/4 flex overflow-x-auto mt-4 space-x-4">
+        <div className="w-3/4 h-72 flex mt-4 space-x-4 overflow-auto">
             {isLoading ? (
-                <p>Loading...</p>
+                <p >Loading...</p>
             ) : (
                 animes.map((anime: Anime) => (
-                    <div key={anime.title} className="relative">
+                    <div key={anime.title} className="relative w-auto flex-shrink-0 overflow-hidden">
                         <img
-                            src={anime.image_url}
-                            alt="anime"
-                            className="w-64"
+                        src={anime.image_url}
+                        alt="anime"
+                        className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                            <p className="text-white text-s">{anime.title}</p>
+                        <div className="absolute inset-0 flex items-center justify-center pl-3 pr-3">
+                          <p className="text-white text-m bg-black bg-opacity-70 pl-3 pr-3">{anime.title}</p>
                         </div>
                     </div>
                 ))

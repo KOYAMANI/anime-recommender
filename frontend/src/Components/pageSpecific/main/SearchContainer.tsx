@@ -27,13 +27,13 @@ const SearchContainer: React.FC<SearchContainerProps> = ({
                         onChange={handleChange}
                         type="text"
                         placeholder="Enter anime title"
-                        className="input border py-2 px-3 text-black"
+                        className="input border py-2 px-3 text-black font-cherry"
                     />
                     <button
                         type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2"
                     >
-                        Search
+                        <p className='font-cherry'>Search</p>
                     </button>
                 </div>
                 {showSuggestions && searchResults.length > 0 && (

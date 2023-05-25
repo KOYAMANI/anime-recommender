@@ -62,10 +62,10 @@ const Main: React.FC = () => {
                 .getRecommendation(title)
                 .then((res) => {
                     setAnimes(res)
-                    setIsLoading(false)
                 })
                 .catch((err) => setError(err.message))
             setTitle('')
+            setIsLoading(false)
         }
     }
 
