@@ -2,19 +2,33 @@ import React, { useEffect, useState } from 'react'
 import SearchContainer from '../Components/pageSpecific/main/SearchContainer'
 import ResultContainer from '../Components/pageSpecific/main/ResultContainer'
 import APIService from '../Components/APIService'
-import logo from '../public/icons/girl.png'
+import logo from '../assets/icons/girl.png'
+import { useDispatch, useSelector } from 'react-redux'
+import RootState from '../redux/rootState'
+import { finishLoading, startLoading } from '../redux/slices/loadingSlice'
+import LoadingSpinner from '../Components/common/LoadingSpinner'
 
 const Main: React.FC = () => {
     const [title, setTitle] = useState('')
     const [error, setError] = useState('')
     const [animes, setAnimes] = useState([])
     const [searchResults, setSearchResults] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
+    // const [isLoading, setIsLoading] = useState(false)
     const [showSuggestions, setShowSuggestions] = useState(false)
 
     const apiService = new APIService()
 
+    const dispatch = useDispatch()
+    const isSuggestionsLoading = useSelector(
+        (state: RootState) => state.loading['FETCH_SUGGESTIONS']
+    )
+    const isRecLoading = useSelector(
+        (state: RootState) => state.loading['FETCH_RECOMMENDATIONS']
+    )
+    console.log(isRecLoading)
+
     useEffect(() => {
+        console.log(process.env.REACT_APP_API_URL)
         apiService
             .getHealth()
             .then((res) => console.log(res))
@@ -23,6 +37,7 @@ const Main: React.FC = () => {
 
     const handleChange = (event: any) => {
         setTitle(event.target.value)
+        dispatch(startLoading('FETCH_SUGGESTIONS'))
         if (event.target.value !== '') {
             setSearchResults([])
             setError('')
@@ -30,16 +45,17 @@ const Main: React.FC = () => {
                 .getSuggestions(event.target.value)
                 .then((res) => {
                     setSearchResults(res.data)
-                    setIsLoading(false)
                     setShowSuggestions(true)
+                    dispatch(finishLoading('FETCH_SUGGESTIONS'))
                 })
                 .catch((err) => {
                     console.error(err)
                     setError(err.message || 'An unexpected error occurred')
+                    dispatch(finishLoading('FETCH_SUGGESTIONS'))
                 })
         } else {
             setSearchResults([])
-            setShowSuggestions(false)
+            dispatch(finishLoading('FETCH_SUGGESTIONS'))
         }
     }
 
@@ -49,23 +65,26 @@ const Main: React.FC = () => {
     }
 
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
-        setIsLoading(true)
+        dispatch(startLoading('FETCH_RECOMMENDATIONS'))
         setAnimes([])
         setError('')
         event.preventDefault()
         setShowSuggestions(false)
         if (title === '') {
             setError('Please enter a title')
-            setIsLoading(false)
+            dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
         } else {
             apiService
                 .getRecommendation(title)
                 .then((res) => {
                     setAnimes(res)
-                    setIsLoading(false)
+                    setTitle('')
+                    dispatch(finishLoading('FETCH_RECOMMENDATIONS')) // Moved this here
                 })
-                .catch((err) => setError(err.message))
-            setTitle('')
+                .catch((err) => {
+                    setError(err.message)
+                    dispatch(finishLoading('FETCH_RECOMMENDATIONS')) // And here
+                })
         }
     }
 
@@ -80,7 +99,11 @@ const Main: React.FC = () => {
                 handleSuggestionClick={handleSuggestionClick}
                 handleSubmit={submitForm}
             />
-            <ResultContainer isLoading={isLoading} animes={animes} />
+            {isRecLoading ? (
+                <LoadingSpinner />
+            ) : (
+                <ResultContainer animes={animes} />
+            )}
             <div>{error ? <p>{error}</p> : null}</div>
         </header>
     )

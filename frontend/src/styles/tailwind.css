@@ -2,6 +2,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bakbak+One&display=swap');
 
 @layer base {
   body {
@@ -10,5 +12,15 @@
 
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  }
+
+  p, input, h1, button {
+    @apply font-cherry;
+  }
+}
+
+@layer components {
+  .font-cherry {
+    font-family: 'Cherry Bomb One', cursive;
   }
 }

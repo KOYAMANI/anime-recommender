@@ -7,7 +7,7 @@ import Signup from './Pages/Signup'
 import User from './Pages/User'
 import Login from './Pages/Login'
 import { useEffect } from 'react'
-import { login } from './redux/slices/authSlice'
+import { loginSuccess } from './redux/slices/authSlice'
 
 const App = () => {
     const dispatch = useDispatch()
@@ -15,7 +15,7 @@ const App = () => {
     useEffect(() => {
         const token = localStorage.getItem('token')
         if (token) {
-            dispatch(login(token))
+            dispatch(loginSuccess(token))
         }
     }, [dispatch])
 

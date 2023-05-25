@@ -1,8 +1,9 @@
 import { AuthState } from './slices/authSlice'
+import { LoadingState } from './slices/loadingSlice'
 
 interface RootState {
     auth: AuthState
-    // Other slices of state go here
+    loading: LoadingState
 }
 
 export default RootState
