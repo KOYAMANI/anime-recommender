@@ -7,6 +7,14 @@ from flask import current_app
 
 
 class MalHandler:
+    _instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
     def __init__(self):
         self.dataset_handler = DatasetHandler()
         self.MAL_API_URL = os.getenv("MAL_API_URL")

@@ -24,9 +24,9 @@ load_dotenv()
 
 cors = CORS(bp, resources={r"/api/*": {"origins": "*"}})
 
-cb_recommender = CBRecommender()
-mal_handler = MalHandler()
-dataset_handler = DatasetHandler()
+# cb_recommender = CBRecommender()
+# mal_handler = MalHandler()
+# dataset_handler = DatasetHandler()
 api_handler = APIHandler()
 
 
@@ -145,6 +145,7 @@ def get_image():
             body = request.get_json()
             title = body["title"]
             try:
+                mal_handler = MalHandler.get_instance()
                 res = mal_handler.get_anime_image(title)
                 return res, 200
             except KeyError:
@@ -166,6 +167,8 @@ def rec_with_image():
 
     title = request.get_json()["title"]
     try:
+        mal_handler = MalHandler.get_instance()
+        cb_recommender = CBRecommender.get_instance()
         rec = json.loads(cb_recommender.get_rec(title))
         anime_titles = rec["data"]
         res = [
@@ -191,6 +194,7 @@ def get_suggestions():
 
     title = request.get_json()["title"]
     try:
+        dataset_handler = DatasetHandler.get_instance()
         res = json.loads(dataset_handler.search_anime_titles(title))
         return res, 200
     except KeyError:
@@ -216,6 +220,7 @@ def get_anime_v2():
 @bp.route("/api/v2/anime/name", methods=["GET"])
 @cross_origin()
 def get_anime_name_v2():
+    dataset_handler = DatasetHandler.get_instance()
     df = dataset_handler.load_anime_name()
     res = df.head(5)
     return res.to_json(), 200
