@@ -1,4 +1,3 @@
-// SearchContainer.tsx
 import React from 'react'
 
 interface SearchContainerProps {
@@ -33,7 +32,7 @@ const SearchContainer: React.FC<SearchContainerProps> = ({
                         type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2"
                     >
-                        <p className='font-cherry'>Search</p>
+                        <p className="font-cherry">Search</p>
                     </button>
                 </div>
                 {showSuggestions && searchResults.length > 0 && (

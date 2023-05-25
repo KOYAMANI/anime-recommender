@@ -28,16 +28,19 @@ export default class APIService {
     }
 
     async getSuggestions(title: string) {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}api/suggestions`, {
-            method: 'POST',
-            headers: {
-                cors: 'no-cors',
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-                title: title,
-            }),
-        })
+        const res = await fetch(
+            `${process.env.REACT_APP_API_URL}api/suggestions`,
+            {
+                method: 'POST',
+                headers: {
+                    cors: 'no-cors',
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: title,
+                }),
+            }
+        )
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
         return res.json()
     }

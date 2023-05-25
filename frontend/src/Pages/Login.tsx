@@ -3,7 +3,7 @@ import { CiUnread, CiRead } from 'react-icons/ci'
 import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { login } from '../redux/slices/authSlice'
+import { loginSuccess } from '../redux/slices/authSlice'
 
 import APIService from '../Components/APIService'
 
@@ -35,7 +35,10 @@ const Login: React.FC = () => {
                 console.log(res)
                 localStorage.setItem('token', res.access_token)
                 dispatch(
-                    login({ token: res.access_token, username: res.username })
+                    loginSuccess({
+                        token: res.access_token,
+                        username: res.username,
+                    })
                 )
                 navigate('/')
             })
