@@ -16,7 +16,7 @@ const Main: React.FC = () => {
 
     useEffect(() => {
         apiService
-            .getHello()
+            .getHealth()
             .then((res) => console.log(res))
             .catch((err) => console.log(err))
     }, [])
