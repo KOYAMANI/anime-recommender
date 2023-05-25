@@ -1,6 +1,6 @@
 export default class APIService {
-    async getHello() {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}api/`, {
+    async getHealth() {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/health`, {
             method: 'GET',
             headers: {
                 cors: 'no-cors',

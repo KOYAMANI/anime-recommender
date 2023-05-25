@@ -30,10 +30,10 @@ dataset_handler = DatasetHandler()
 api_handler = APIHandler()
 
 
-@bp.route("/api", methods=["GET"])
+@bp.route("/api/health", methods=["GET"])
 @cross_origin()
 def hello():
-    return json.loads('{"message": "Hello World!"}')
+    return jsonify({"message": "ok"}), 200
 
 
 @bp.route("/api/signup", methods=["POST"])
