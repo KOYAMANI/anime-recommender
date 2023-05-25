@@ -7,14 +7,15 @@ Anime recommendation website based on [Anime Recommendation Database 2020](https
 ### For development
 
 ```
-docker-compose -f docker-compose.dev.yml up --build
+docker-compose -p anime-recommender-dev -f docker-compose.dev.yml up --build
 
 ```
 
-### For production
+### For stage (Frontend uses production build)
 
 ```
-docker-compose -f docker-compose.yml up --build
+docker-compose -p anime-recommender-stage -f docker-compose.stage.yml up --build
+
 ```
 
 ## Dataset
