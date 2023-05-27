@@ -7,7 +7,7 @@ from .models.anime_name import AnimeName
 from flask import current_app
 
 
-class DatasetHandler:
+class AnimeDataHandler:
     _instance = None
 
     @classmethod

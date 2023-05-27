@@ -4,9 +4,8 @@ from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from .cf_recommender import CFRecommender
 from .cb_recommender import CBRecommender
-from .api_handler import APIHandler
-from .mal_handler import MalHandler
-from .dataset_handler import DatasetHandler
+from .api_handler import JikanAPIHandler
+from .anime_data_handler import AnimeDataHandler
 from .models.user import User
 from markupsafe import escape
 from flask_jwt_extended import create_access_token
@@ -14,8 +13,8 @@ import requests
 import random
 import string
 import json
-
 from app import db
+from flask import current_app
 
 bp = Blueprint("routes", __name__)
 
@@ -24,7 +23,7 @@ load_dotenv()
 
 cors = CORS(bp, resources={r"/api/*": {"origins": "*"}})
 
-api_handler = APIHandler()
+jikan_handler = JikanAPIHandler()
 
 
 @bp.route("/api/health", methods=["GET"])
@@ -136,14 +135,14 @@ def generate_code_verifier():
 @bp.route("/api/image", methods=["POST"])
 @cross_origin()
 def get_image():
+    mal_api_handler = current_app.config['MAL_API_HANDLER']
     content_type = request.headers.get("Content-Type")
     if content_type == "application/json":
         if request.method == "POST":
             body = request.get_json()
             title = body["title"]
-            try:
-                mal_handler = MalHandler.get_instance()
-                res = mal_handler.get_anime_image(title)
+            try:       
+                res = mal_api_handler.get_anime_image(title)
                 return res, 200
             except KeyError:
                 return json.loads('{"message": "Anime not found!"}'), 404
@@ -153,10 +152,12 @@ def get_image():
         return "Content-Type not supported!", 400
 
 
+
 # TODO: Decide which recommender to use and activate either one
 @bp.route("/api/anime", methods=["POST"])
 @cross_origin()
 def rec_with_image():
+    mal_api_handler = current_app.config['MAL_API_HANDLER']
     if request.headers.get("Content-Type") != "application/json":
         return "Content-Type not supported!", 400
     if request.method != "POST":
@@ -164,16 +165,15 @@ def rec_with_image():
 
     title = request.get_json()["title"]
     try:
-        mal_handler = MalHandler.get_instance()
         cb_recommender = CBRecommender.get_instance()
-        rec = json.loads(cb_recommender.get_rec(title))
-        anime_titles = rec["data"]
+        recommendation = json.loads(cb_recommender.get_rec(title))
+        anime_ids = recommendation["id"]
         res = [
             {
-                "title": title,
-                "image_url": mal_handler.get_anime_image(title)["large"],
+                "title": mal_api_handler.get_anime_title(id),
+                "image_url": mal_api_handler.get_anime_image(id)
             }
-            for title in anime_titles
+            for id in anime_ids
         ]
         print("{0}: {1}".format(title, res[-1]["image_url"]))
         return res, 200
@@ -191,8 +191,8 @@ def get_suggestions():
 
     title = request.get_json()["title"]
     try:
-        dataset_handler = DatasetHandler.get_instance()
-        res = json.loads(dataset_handler.search_anime_titles(title))
+        anime_data_handler = AnimeDataHandler.get_instance()
+        res = json.loads(anime_data_handler.search_anime_titles(title))
         return res, 200
     except KeyError:
         return json.loads('{"message": "Anime not found!"}'), 404
@@ -208,7 +208,7 @@ def get_anime_v2():
 
     title = request.get_json()["title"]
     try:
-        res = api_handler.get_anime_info(title)
+        res = jikan_handler.get_anime_info(title)
         return res, 200
     except KeyError:
         return json.loads('{"message": "Anime not found!"}'), 404
@@ -217,21 +217,18 @@ def get_anime_v2():
 @bp.route("/api/v2/anime/name", methods=["GET"])
 @cross_origin()
 def get_anime_name_v2():
-    dataset_handler = DatasetHandler.get_instance()
-    df = dataset_handler.load_anime_name()
+    anime_data_handler = AnimeDataHandler.get_instance()
+    df = anime_data_handler.load_anime_name()
     res = df.head(5)
     return res.to_json(), 200
-
 
 @bp.route("/api/v2/anime/image/<id>", methods=["POST"])
 @cross_origin()
 def get_image_v2(id):
-    # if request.headers.get("Content-Type") != "application/json":
-    #     return "Content-Type not supported!"
     if request.method != "POST":
         return "Method not supported!", 400
     try:
-        res = api_handler.get_anime_picture(id)
+        res = jikan_handler.get_anime_picture(id)
         return res, 200
     except KeyError:
         return json.loads('{"message": "Anime not found!"}'), 404
