@@ -37,10 +37,14 @@ def create_app():
         if not debug and secrets
         else os.getenv("X_MAL_CLIENT_ID")
     )
+    app.config["JWT_SECRET_KEY"] = (
+        secrets["JWT_SECRET_KEY"]
+        if not debug and secrets
+        else os.getenv("JWT_SECRET_KEY")
+    )
 
     app.config["CORS_HEADERS"] = "Content-Type"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["JWT_SECRET_KEY"] = "super-secret"  # TODO: store the secret in env
 
     env = "Development" if debug else "Production"
     logger.info(f"Application starting on {env} environment")

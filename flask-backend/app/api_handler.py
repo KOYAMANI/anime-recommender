@@ -10,7 +10,6 @@ class MalAPIHandler:
     def __init__(self, mal_api_url, x_mal_client_id):
         self.MAL_API_URL = mal_api_url
         self.X_MAL_CLIENT_ID = x_mal_client_id
-        # self.dataset_handler = DatasetHandler()
 
     @classmethod
     def get_instance(cls, mal_api_url=None, x_mal_client_id=None):
