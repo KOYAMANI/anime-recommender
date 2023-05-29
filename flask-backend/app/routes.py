@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from flask import Blueprint, request, jsonify, redirect, url_for, session, current_app
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import create_access_token
-from markupsafe import escape
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .api_handler import JikanAPIHandler
@@ -141,16 +140,7 @@ def mal_callback():
  
     access_token = response.json().get('access_token')
 
-    return redirect(f"http://localhost:3000/home?token={access_token}")
-
-# Generate a code verifier
-@bp.route("/api/generate-code-verifier", methods=["GET"])
-@cross_origin()
-def generate_code_verifier():
-    code_verifier = "".join(
-        random.choice(string.ascii_letters + string.digits) for _ in range(128)
-    )
-    return jsonify({"code_verifier": code_verifier})
+    return redirect(f"http://localhost:3000/login?token={access_token}")
 
 
 @bp.route("/api/image", methods=["POST"])

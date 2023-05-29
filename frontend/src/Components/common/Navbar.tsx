@@ -3,11 +3,12 @@ import { CiHome, CiUser, CiLogout } from 'react-icons/ci'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+
 import { logout } from '../../redux/slices/authSlice'
 import RootState from '../../redux/rootState'
 
 const Navbar: React.FC = () => {
-    const auth = useSelector((state: RootState) => state.auth)
+    const auth = useSelector((state: RootState) => state.auth)? localStorage.getItem('token') : null
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -28,12 +29,10 @@ const Navbar: React.FC = () => {
                     <CiUser className="text-2xl" />
                 </Link>
             </div>
-            {auth.token ? (
+            {auth? (
                 <div className="flex space-x-2">
                     <div>
-                        {auth.username ? (
-                            <p className="text-xs">{auth.username}</p>
-                        ) : null}
+                        <p>logged in</p>
                     </div>
                     <Link to="/login">
                         <CiLogout

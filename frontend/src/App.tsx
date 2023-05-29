@@ -1,14 +1,16 @@
+import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Provider, useDispatch } from 'react-redux'
+
 import store from './redux/store'
-import Navbar from './Components/common/Navbar'
-import Main from './Pages/Main'
-import Signup from './Pages/Signup'
-import User from './Pages/User'
-import Login from './Pages/Login'
-import { useEffect } from 'react'
 import { loginSuccess } from './redux/slices/authSlice'
-import MalLogin from './Pages/MalLogin'
+
+import Navbar from './Components/common/Navbar'
+import MyAnimeListLogin from './Pages/MyAnimeListLogin'
+import Main from './Pages/Main'
+import User from './Pages/User'
+
+
 
 const App = () => {
     const dispatch = useDispatch()
@@ -30,10 +32,8 @@ const RootApp = () => (
                 <Navbar />
                 <Routes>
                     <Route path="/" element={<Main />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/login" element={<Login />} />
                     <Route path="/user" element={<User />} />
-                    <Route path="/oauth" element={<MalLogin />} />
+                    <Route path="/login" element={<MyAnimeListLogin />} />
                 </Routes>
             </div>
         </Router>

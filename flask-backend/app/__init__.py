@@ -1,9 +1,11 @@
 import os
 import logging
+import json
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-import json
+
 from .api_handler import MalAPIHandler
 from .database import db
 from .routes import bp
