@@ -68,7 +68,6 @@ def mal_callback():
 
     code = request.args.get("code")
     code_verifier = session.get("code_verifier")
-    callback_uri = url_for("routes.mal_callback", _external=True)
 
     state = request.args.get("state")
     original_state = session.get("state")
@@ -76,7 +75,7 @@ def mal_callback():
         return jsonify({"error": "Invalid state parameter"}), 400
 
     access_token, error = mal_api_handler.get_access_token(
-        code, code_verifier, callback_uri
+        code, code_verifier
     )
     if not access_token:
         return (
