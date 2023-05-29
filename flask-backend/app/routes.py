@@ -35,54 +35,10 @@ def hello():
     return jsonify({"message": "ok"}), 200
 
 
-@bp.route("/api/signup", methods=["POST"])
-@cross_origin()
-def sign_up():
-    data = request.get_json()
-    name = data.get("name")
-    email = data.get("email")
-    password = data.get("password")
-
-    if not all([name, email, password]):
-        return jsonify({"error": "Name, email and password are required"}), 400
-
-    emailExist = User.query.filter((User.email == email)).first()
-    if emailExist:
-        return jsonify({"error": "This email address has already taken"}), 400
-
-    nameExist = User.query.filter((User.name == name)).first()
-    if nameExist:
-        return jsonify({"error": "This username has already taken"}), 400
-
-    hashed_password = generate_password_hash(password)
-    new_user = User(name=name, email=email, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-
-    access_token = create_access_token(identity=new_user.id)
-    return jsonify(access_token=access_token, username=name), 200
-
-
-@bp.route("/api/login", methods=["POST"])
-@cross_origin() 
-def log_in():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
-
-    if not all([email, password]):
-        return jsonify({"error": "Email and password are required"}), 400
-
-    user = User.query.filter_by(email=data["email"]).first()
-    if not user or not check_password_hash(user.password, data["password"]):
-        return jsonify({"error": "Invalid email or password"}), 401
-
-    access_token = create_access_token(identity=user.id)
-    return jsonify(access_token=access_token, username=user.name), 200
-
-@bp.route("/api/authorize", methods=["GET"]) 
+@bp.route("/api/v1/oauth/authorize", methods=["GET"]) 
 @cross_origin()
 def mal_oauth():
+    mal_api_handler = current_app.config['MAL_API_HANDLER']
     def base64url_encode(data):
         return base64.urlsafe_b64encode(data).rstrip(b'=')
     code_verifier = base64url_encode(os.urandom(40)).decode('utf-8')
@@ -91,59 +47,43 @@ def mal_oauth():
     
     session['code_verifier'] = code_verifier
     session['state'] = state
-    
-    parameters = {
-        "response_type": "code",
-        "client_id": "8056142dda9413a4411028bdbdb2541a",
-        "state": state,
-        "redirect_uri": url_for("routes.mal_callback", _external=True),
-        "code_challenge": code_verifier,
-        "code_challenge_method": "plain"   
-    }
-    url = "https://myanimelist.net/v1/oauth2/authorize?" + urlencode(parameters)
+
+    url = mal_api_handler.user_oauth_authorize(state, code_verifier)
     return redirect(url)
 
-@bp.route("/api/callback", methods=["GET"])
+@bp.route("/api/v1/oauth/callback", methods=["GET"])
 @cross_origin()
 def mal_callback():
-    error = request.args.get("error")
+    mal_api_handler = current_app.config['MAL_API_HANDLER']
 
+    error = request.args.get("error")
     if error:
         print("An error occurred during authorization: ", error)
         return jsonify({"error": error}), 400
     
     code = request.args.get("code")
-
     code_verifier = session.get('code_verifier')
-    print('code_verifier: ', code_verifier)
+    callback_uri = url_for("routes.mal_callback", _external=True)
 
-    # Service provider redirects back to your app with the authorization code
     state = request.args.get("state")
     original_state = session.get('state')
     if state != original_state:
         return jsonify({"error": "Invalid state parameter"}), 400
- 
-    # Exchange the code for an access token
-    data = {
-        "client_id": "8056142dda9413a4411028bdbdb2541a",
-        "client_secret": "791a1f95b94b4c994208be84a8b93da3cdb87c64acac469b9de9d1309e29e64b",
-        "grant_type": "authorization_code",
-        "code": code,
-        "redirect_uri": url_for("routes.mal_callback", _external=True),
-        "code_verifier": code_verifier
-    }
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    response = requests.post("https://myanimelist.net/v1/oauth2/token", data=data, headers=headers)
+    
+    access_token, error = mal_api_handler.get_access_token(code, code_verifier, callback_uri)
+    if not access_token:
+        return jsonify({"error": "Failed to retrieve access token", "details": error}), 400
+    
+    user_info, error = mal_api_handler.get_user_info(access_token)
+    if not user_info:
+        return jsonify({"error": "Failed to retrieve user info", "details": error}), 400
 
-    if response.status_code != 200:
-        return jsonify({"error": "Failed to retrieve access token"}), 400
- 
-    access_token = response.json().get('access_token')
+    user_name = user_info['name']
+    user_id = user_info['id']
 
-    return redirect(f"http://localhost:3000/login?token={access_token}")
+    return mal_api_handler.user_oauth_redirect(access_token, user_name, user_id)
 
-
-@bp.route("/api/image", methods=["POST"])
+@bp.route("/api/v1/anime/image", methods=["POST"])
 @cross_origin()
 def get_image():
     mal_api_handler = current_app.config['MAL_API_HANDLER']
@@ -165,7 +105,7 @@ def get_image():
 
 
 # TODO: Decide which recommender to use and activate either one
-@bp.route("/api/anime", methods=["POST"])
+@bp.route("/api/v1/anime/recommend", methods=["POST"])
 @cross_origin()
 def rec_with_image():
     mal_api_handler = current_app.config['MAL_API_HANDLER']
@@ -192,7 +132,7 @@ def rec_with_image():
         return json.loads('{"message": "Anime not found!"}'), 404
 
 
-@bp.route("/api/suggestions", methods=["POST"])
+@bp.route("/api/v1/search-suggestion", methods=["POST"])
 @cross_origin()
 def get_suggestions():
     if request.headers.get("Content-Type") != "application/json":
@@ -244,6 +184,52 @@ def get_image_v2(id):
     except KeyError:
         return json.loads('{"message": "Anime not found!"}'), 404
 
+# v1 api routes
+
+@bp.route("/api/signup", methods=["POST"])
+@cross_origin()
+def sign_up():
+    data = request.get_json()
+    name = data.get("name")
+    email = data.get("email")
+    password = data.get("password")
+
+    if not all([name, email, password]):
+        return jsonify({"error": "Name, email and password are required"}), 400
+
+    emailExist = User.query.filter((User.email == email)).first()
+    if emailExist:
+        return jsonify({"error": "This email address has already taken"}), 400
+
+    nameExist = User.query.filter((User.name == name)).first()
+    if nameExist:
+        return jsonify({"error": "This username has already taken"}), 400
+
+    hashed_password = generate_password_hash(password)
+    new_user = User(name=name, email=email, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    access_token = create_access_token(identity=new_user.id)
+    return jsonify(access_token=access_token, username=name), 200
+
+
+@bp.route("/api/login", methods=["POST"])
+@cross_origin() 
+def log_in():
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+
+    if not all([email, password]):
+        return jsonify({"error": "Email and password are required"}), 400
+
+    user = User.query.filter_by(email=data["email"]).first()
+    if not user or not check_password_hash(user.password, data["password"]):
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    access_token = create_access_token(identity=user.id)
+    return jsonify(access_token=access_token, username=user.name), 200
 
 # @bp.route('/api/anime/rec', methods=['POST'])
 # @cross_origin()

@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
                 <Link to="/">
                     <CiHome className="text-2xl" />
                 </Link>
-                <Link to="/user">
+                <Link to="/login">
                     <CiUser className="text-2xl" />
                 </Link>
             </div>

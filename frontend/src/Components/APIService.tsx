@@ -13,7 +13,7 @@ export default class APIService {
     }
 
     async getRecommendation(title: string) {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}api/anime`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/v1/anime/recommend`, {
             method: 'POST',
             headers: {
                 cors: 'no-cors',
@@ -29,7 +29,7 @@ export default class APIService {
 
     async getSuggestions(title: string) {
         const res = await fetch(
-            `${process.env.REACT_APP_API_URL}api/suggestions`,
+            `${process.env.REACT_APP_API_URL}api/v1/search-suggestion`,
             {
                 method: 'POST',
                 headers: {
@@ -82,7 +82,7 @@ export default class APIService {
     }
 
     async mal_oauth(codeVerfier: string){
-        const res = await fetch(`${process.env.REACT_APP_API_URL}api/authorize`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/v1/oauth/authorize`, {
             method: 'POST',
             headers: {
                 cors: 'no-cors',

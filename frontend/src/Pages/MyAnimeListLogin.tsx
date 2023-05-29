@@ -17,12 +17,16 @@ const MyAnimeListLogin: React.FC = () => {
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
+        const userName = urlParams.get('userName');
+
+        // TODO: Do some validation on the token and userName
     
         if (token) {
             localStorage.setItem('token', token);
             dispatch(
                 loginSuccess({
-                    token: token
+                    token: token,
+                    userName: userName
                 })
             )
             navigate('/user');
@@ -32,13 +36,8 @@ const MyAnimeListLogin: React.FC = () => {
         }
     }, [navigate]);
 
-    // const handleLogin = () => {
-    //     const oauthUrl = `${process.env.REACT_APP_API_URL}api/authorize`; // assuming you have the base API URL in your .env file
-    //     window.open(oauthUrl, "_blank");
-    // };
-
     const handleLogin = () => {
-        const oauthUrl = `${process.env.REACT_APP_API_URL}api/authorize`; // assuming you have the base API URL in your .env file
+        const oauthUrl = `${process.env.REACT_APP_API_URL}api/v1/oauth/authorize`; // assuming you have the base API URL in your .env file
         window.location.href = oauthUrl;
     };
     
