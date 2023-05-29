@@ -8,7 +8,9 @@ import { logout } from '../../redux/slices/authSlice'
 import RootState from '../../redux/rootState'
 
 const Navbar: React.FC = () => {
-    const auth = useSelector((state: RootState) => state.auth)? localStorage.getItem('token') : null
+    const auth = useSelector((state: RootState) => state.auth)
+        ? localStorage.getItem('token')
+        : null
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -29,7 +31,7 @@ const Navbar: React.FC = () => {
                     <CiUser className="text-2xl" />
                 </Link>
             </div>
-            {auth? (
+            {auth ? (
                 <div className="flex space-x-2">
                     <div>
                         <p>logged in</p>

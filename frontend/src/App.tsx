@@ -10,8 +10,6 @@ import MyAnimeListLogin from './Pages/MyAnimeListLogin'
 import Main from './Pages/Main'
 import User from './Pages/User'
 
-
-
 const App = () => {
     const dispatch = useDispatch()
 

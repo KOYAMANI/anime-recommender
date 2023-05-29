@@ -13,16 +13,19 @@ export default class APIService {
     }
 
     async getRecommendation(title: string) {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}api/v1/anime/recommend`, {
-            method: 'POST',
-            headers: {
-                cors: 'no-cors',
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-                title: title,
-            }),
-        })
+        const res = await fetch(
+            `${process.env.REACT_APP_API_URL}api/v1/anime/recommend`,
+            {
+                method: 'POST',
+                headers: {
+                    cors: 'no-cors',
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: title,
+                }),
+            }
+        )
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
         return res.json()
     }
@@ -81,19 +84,21 @@ export default class APIService {
         return res
     }
 
-    async mal_oauth(codeVerfier: string){
-        const res = await fetch(`${process.env.REACT_APP_API_URL}api/v1/oauth/authorize`, {
-            method: 'POST',
-            headers: {
-                cors: 'no-cors',
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-                'code_verifier': codeVerfier,
-            }),
-        })
+    async mal_oauth(codeVerfier: string) {
+        const res = await fetch(
+            `${process.env.REACT_APP_API_URL}api/v1/oauth/authorize`,
+            {
+                method: 'POST',
+                headers: {
+                    cors: 'no-cors',
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({
+                    code_verifier: codeVerfier,
+                }),
+            }
+        )
         console.log(res)
         return res
     }
-
 }

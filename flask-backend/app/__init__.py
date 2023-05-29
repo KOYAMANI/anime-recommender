@@ -25,7 +25,7 @@ def create_app():
             secrets = json.loads(secrets_json)
         else:
             raise ValueError("SECRETS_JSON is not set")
-    
+
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         secrets["SQLALCHEMY_DATABASE_URI_PROD"]
         if not debug and secrets
@@ -35,7 +35,9 @@ def create_app():
         secrets["MAL_API_URL"] if not debug and secrets else os.getenv("MAL_API_URL")
     )
     app.config["MAL_OAUTH_URL"] = (
-        secrets["MAL_OAUTH_URL"] if not debug and secrets else os.getenv("MAL_OAUTH_URL")
+        secrets["MAL_OAUTH_URL"]
+        if not debug and secrets
+        else os.getenv("MAL_OAUTH_URL")
     )
     app.config["X_MAL_CLIENT_ID"] = (
         secrets["X_MAL_CLIENT_ID_PROD"]
@@ -67,14 +69,14 @@ def create_app():
     # Initialize MyAnimeList API Handler here to pass env variables from application context
     mal_api_handler = MalAPIHandler(
         app.config["REACT_APP_URL"],
-        app.config["MAL_OAUTH_URL"], 
-        app.config["MAL_API_URL"], 
-        app.config["X_MAL_CLIENT_ID"], 
-        app.config["X_MAL_CLIENT_SECRET"]
+        app.config["MAL_OAUTH_URL"],
+        app.config["MAL_API_URL"],
+        app.config["X_MAL_CLIENT_ID"],
+        app.config["X_MAL_CLIENT_SECRET"],
     )
     app.config["MAL_API_HANDLER"] = mal_api_handler
 
-    app.secret_key = 'MY_SECRET_KEY'
+    app.secret_key = "MY_SECRET_KEY"
     db.init_app(app)
     jwt = JWTManager(app)
     app.register_blueprint(bp)

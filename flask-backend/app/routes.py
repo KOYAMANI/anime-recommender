@@ -35,64 +35,75 @@ def hello():
     return jsonify({"message": "ok"}), 200
 
 
-@bp.route("/api/v1/oauth/authorize", methods=["GET"]) 
+@bp.route("/api/v1/oauth/authorize", methods=["GET"])
 @cross_origin()
 def mal_oauth():
-    mal_api_handler = current_app.config['MAL_API_HANDLER']
-    def base64url_encode(data):
-        return base64.urlsafe_b64encode(data).rstrip(b'=')
-    code_verifier = base64url_encode(os.urandom(40)).decode('utf-8')
+    mal_api_handler = current_app.config["MAL_API_HANDLER"]
 
-    state = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(128))
-    
-    session['code_verifier'] = code_verifier
-    session['state'] = state
+    def base64url_encode(data):
+        return base64.urlsafe_b64encode(data).rstrip(b"=")
+
+    code_verifier = base64url_encode(os.urandom(40)).decode("utf-8")
+
+    state = "".join(
+        random.choice(string.ascii_letters + string.digits) for _ in range(128)
+    )
+
+    session["code_verifier"] = code_verifier
+    session["state"] = state
 
     url = mal_api_handler.user_oauth_authorize(state, code_verifier)
     return redirect(url)
 
+
 @bp.route("/api/v1/oauth/callback", methods=["GET"])
 @cross_origin()
 def mal_callback():
-    mal_api_handler = current_app.config['MAL_API_HANDLER']
+    mal_api_handler = current_app.config["MAL_API_HANDLER"]
 
     error = request.args.get("error")
     if error:
         print("An error occurred during authorization: ", error)
         return jsonify({"error": error}), 400
-    
+
     code = request.args.get("code")
-    code_verifier = session.get('code_verifier')
+    code_verifier = session.get("code_verifier")
     callback_uri = url_for("routes.mal_callback", _external=True)
 
     state = request.args.get("state")
-    original_state = session.get('state')
+    original_state = session.get("state")
     if state != original_state:
         return jsonify({"error": "Invalid state parameter"}), 400
-    
-    access_token, error = mal_api_handler.get_access_token(code, code_verifier, callback_uri)
+
+    access_token, error = mal_api_handler.get_access_token(
+        code, code_verifier, callback_uri
+    )
     if not access_token:
-        return jsonify({"error": "Failed to retrieve access token", "details": error}), 400
-    
+        return (
+            jsonify({"error": "Failed to retrieve access token", "details": error}),
+            400,
+        )
+
     user_info, error = mal_api_handler.get_user_info(access_token)
     if not user_info:
         return jsonify({"error": "Failed to retrieve user info", "details": error}), 400
 
-    user_name = user_info['name']
-    user_id = user_info['id']
+    user_name = user_info["name"]
+    user_id = user_info["id"]
 
     return mal_api_handler.user_oauth_redirect(access_token, user_name, user_id)
+
 
 @bp.route("/api/v1/anime/image", methods=["POST"])
 @cross_origin()
 def get_image():
-    mal_api_handler = current_app.config['MAL_API_HANDLER']
+    mal_api_handler = current_app.config["MAL_API_HANDLER"]
     content_type = request.headers.get("Content-Type")
     if content_type == "application/json":
         if request.method == "POST":
             body = request.get_json()
             title = body["title"]
-            try:       
+            try:
                 res = mal_api_handler.get_anime_image(title)
                 return res, 200
             except KeyError:
@@ -103,12 +114,11 @@ def get_image():
         return "Content-Type not supported!", 400
 
 
-
 # TODO: Decide which recommender to use and activate either one
 @bp.route("/api/v1/anime/recommend", methods=["POST"])
 @cross_origin()
 def rec_with_image():
-    mal_api_handler = current_app.config['MAL_API_HANDLER']
+    mal_api_handler = current_app.config["MAL_API_HANDLER"]
     if request.headers.get("Content-Type") != "application/json":
         return "Content-Type not supported!", 400
     if request.method != "POST":
@@ -122,7 +132,7 @@ def rec_with_image():
         res = [
             {
                 "title": mal_api_handler.get_anime_title(id),
-                "image_url": mal_api_handler.get_anime_image(id)
+                "image_url": mal_api_handler.get_anime_image(id),
             }
             for id in anime_ids
         ]
@@ -173,6 +183,7 @@ def get_anime_name_v2():
     res = df.head(5)
     return res.to_json(), 200
 
+
 @bp.route("/api/v2/anime/image/<id>", methods=["POST"])
 @cross_origin()
 def get_image_v2(id):
@@ -184,7 +195,9 @@ def get_image_v2(id):
     except KeyError:
         return json.loads('{"message": "Anime not found!"}'), 404
 
+
 # v1 api routes
+
 
 @bp.route("/api/signup", methods=["POST"])
 @cross_origin()
@@ -215,7 +228,7 @@ def sign_up():
 
 
 @bp.route("/api/login", methods=["POST"])
-@cross_origin() 
+@cross_origin()
 def log_in():
     data = request.get_json()
     email = data.get("email")
@@ -230,6 +243,7 @@ def log_in():
 
     access_token = create_access_token(identity=user.id)
     return jsonify(access_token=access_token, username=user.name), 200
+
 
 # @bp.route('/api/anime/rec', methods=['POST'])
 # @cross_origin()

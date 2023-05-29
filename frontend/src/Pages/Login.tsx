@@ -7,6 +7,7 @@ import { loginSuccess } from '../redux/slices/authSlice'
 
 import APIService from '../Components/APIService'
 
+// TODO: Delete this file once MAL OAuth is done
 const Login: React.FC = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

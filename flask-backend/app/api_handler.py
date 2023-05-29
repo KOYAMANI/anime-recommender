@@ -8,7 +8,14 @@ from flask import current_app, redirect, url_for, jsonify
 class MalAPIHandler:
     _instance = None
 
-    def __init__(self, react_app_url, mal_oauth_url, mal_api_url, x_mal_client_id, x_mal_client_secret):
+    def __init__(
+        self,
+        react_app_url,
+        mal_oauth_url,
+        mal_api_url,
+        x_mal_client_id,
+        x_mal_client_secret,
+    ):
         self.REACT_APP_URL = react_app_url
         self.MAL_OAUTH_URL = mal_oauth_url
         self.MAL_API_URL = mal_api_url
@@ -16,9 +23,22 @@ class MalAPIHandler:
         self.X_MAL_CLIENT_SECRET = x_mal_client_secret
 
     @classmethod
-    def get_instance(cls, react_app_url=None, mal_oauth_url=None, mal_api_url=None, x_mal_client_id=None, x_mal_client_secret=None):
+    def get_instance(
+        cls,
+        react_app_url=None,
+        mal_oauth_url=None,
+        mal_api_url=None,
+        x_mal_client_id=None,
+        x_mal_client_secret=None,
+    ):
         if cls._instance is None:
-            cls._instance = cls(react_app_url, mal_oauth_url, mal_api_url, x_mal_client_id, x_mal_client_secret)
+            cls._instance = cls(
+                react_app_url,
+                mal_oauth_url,
+                mal_api_url,
+                x_mal_client_id,
+                x_mal_client_secret,
+            )
         return cls._instance
 
     def get_connection(self):
@@ -39,7 +59,7 @@ class MalAPIHandler:
                 return json.loads('{"message": "Error calling MAL API!"}')
         else:
             return json.loads('{"message": "Error Invalid URL or Headers!"}')
-        
+
     def user_oauth_authorize(self, state, code_verifier):
         if not self.MAL_OAUTH_URL:
             return {"message": "Invalid URL"}
@@ -49,11 +69,11 @@ class MalAPIHandler:
             "state": state,
             "redirect_uri": url_for("routes.mal_callback", _external=True),
             "code_challenge": code_verifier,
-            "code_challenge_method": "plain"   
-        } 
+            "code_challenge_method": "plain",
+        }
         url = self.MAL_OAUTH_URL + "authorize?" + urlencode(params)
         return url
-    
+
     def get_access_token(self, code, code_verifier, callback_url):
         if not self.MAL_OAUTH_URL:
             return {"message": "Invalid URL"}
@@ -63,44 +83,44 @@ class MalAPIHandler:
             "grant_type": "authorization_code",
             "code": code,
             "redirect_uri": callback_url,
-            "code_verifier": code_verifier
+            "code_verifier": code_verifier,
         }
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = requests.post(self.MAL_OAUTH_URL + "token", data=data, headers=headers)
+        response = requests.post(
+            self.MAL_OAUTH_URL + "token", data=data, headers=headers
+        )
 
         if response.status_code != 200:
             return None, response.json()
- 
-        access_token = response.json().get('access_token')
+
+        access_token = response.json().get("access_token")
         return access_token, None
-    
+
     def get_user_info(self, token):
         if not self.MAL_API_URL:
             return {"message": "Invalid URL"}
 
         url = self.MAL_API_URL + "users/@me"
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
+        headers = {"Authorization": f"Bearer {token}"}
         response = requests.get(url, headers=headers)
         print(response.json())
         if response.status_code != 200:
             return None, response.json()
 
         return response.json(), None
-    
+
     def user_oauth_redirect(self, token, user_name, user_id):
         if not self.REACT_APP_URL:
             return {"message": "Invalid URL"}
-        return redirect(f"{self.REACT_APP_URL}login?token={token}&userName={user_name}&userid={user_id}")
+        return redirect(
+            f"{self.REACT_APP_URL}login?token={token}&userName={user_name}&userid={user_id}"
+        )
 
     def get_anime_title(self, anime_id):
         if not self.MAL_API_URL or not self.X_MAL_CLIENT_ID:
             return {"message": "Invalid URL or client ID"}
         url = self.MAL_API_URL + "anime/" + str(anime_id)
-        headers = (
-            {"X-MAL-CLIENT-ID": self.X_MAL_CLIENT_ID}
-        )
+        headers = {"X-MAL-CLIENT-ID": self.X_MAL_CLIENT_ID}
         if url and headers:
             try:
                 res = requests.get(url, headers=headers).content

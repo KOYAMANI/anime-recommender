@@ -15,39 +15,38 @@ const MyAnimeListLogin: React.FC = () => {
     const apiService = new APIService()
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        const userName = urlParams.get('userName');
+        const urlParams = new URLSearchParams(window.location.search)
+        const token = urlParams.get('token')
+        const userName = urlParams.get('userName')
 
         // TODO: Do some validation on the token and userName
-    
+
         if (token) {
-            localStorage.setItem('token', token);
+            localStorage.setItem('token', token)
             dispatch(
                 loginSuccess({
                     token: token,
-                    userName: userName
+                    userName: userName,
                 })
             )
-            navigate('/user');
-        }
-        else {
+            navigate('/user')
+        } else {
             console.log('not authenticated')
         }
-    }, [navigate]);
+    }, [navigate])
 
     const handleLogin = () => {
-        const oauthUrl = `${process.env.REACT_APP_API_URL}api/v1/oauth/authorize`; // assuming you have the base API URL in your .env file
-        window.location.href = oauthUrl;
-    };
-    
+        const oauthUrl = `${process.env.REACT_APP_API_URL}api/v1/oauth/authorize` // assuming you have the base API URL in your .env file
+        window.location.href = oauthUrl
+    }
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <h1 className="text-3xl mb-4">Login</h1>
             <form
                 onSubmit={(e) => {
-                  e.preventDefault(); 
-                  handleLogin();
+                    e.preventDefault()
+                    handleLogin()
                 }}
                 className="flex flex-col justify-center"
             >
@@ -60,7 +59,7 @@ const MyAnimeListLogin: React.FC = () => {
             </form>
             <div>{error ? <p className="text-red-500">{error}</p> : null}</div>
         </div>
-    );
+    )
 }
 
 export default MyAnimeListLogin
