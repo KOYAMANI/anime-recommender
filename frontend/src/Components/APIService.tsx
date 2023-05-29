@@ -84,21 +84,8 @@ export default class APIService {
         return res
     }
 
-    async mal_oauth(codeVerfier: string) {
-        const res = await fetch(
-            `${process.env.REACT_APP_API_URL}api/v1/oauth/authorize`,
-            {
-                method: 'POST',
-                headers: {
-                    cors: 'no-cors',
-                    'content-type': 'application/json',
-                },
-                body: JSON.stringify({
-                    code_verifier: codeVerfier,
-                }),
-            }
-        )
-        console.log(res)
-        return res
+    async getOAuthUrl() {
+        const oauthUrl = `${process.env.REACT_APP_API_URL}api/v1/oauth/authorize`
+        return oauthUrl
     }
 }

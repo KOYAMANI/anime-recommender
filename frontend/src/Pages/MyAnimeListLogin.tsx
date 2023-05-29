@@ -15,28 +15,13 @@ const MyAnimeListLogin: React.FC = () => {
     const apiService = new APIService()
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search)
-        const token = urlParams.get('token')
-        const userName = urlParams.get('userName')
-
-        // TODO: Do some validation on the token and userName
-
-        if (token) {
-            localStorage.setItem('token', token)
-            dispatch(
-                loginSuccess({
-                    token: token,
-                    userName: userName,
-                })
-            )
-            navigate('/user')
-        } else {
-            console.log('not authenticated')
-        }
+        const token = localStorage.getItem('token')
+        if (token) navigate('/user')
+        else console.log('not authenticated')
     }, [navigate])
 
-    const handleLogin = () => {
-        const oauthUrl = `${process.env.REACT_APP_API_URL}api/v1/oauth/authorize` // assuming you have the base API URL in your .env file
+    const handleLogin = async () => {
+        const oauthUrl = await apiService.getOAuthUrl()
         window.location.href = oauthUrl
     }
 

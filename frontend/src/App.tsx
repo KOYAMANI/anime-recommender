@@ -9,6 +9,7 @@ import Navbar from './Components/common/Navbar'
 import MyAnimeListLogin from './Pages/MyAnimeListLogin'
 import Main from './Pages/Main'
 import User from './Pages/User'
+import Callback from './Pages/Callback'
 
 const App = () => {
     const dispatch = useDispatch()
@@ -32,6 +33,7 @@ const RootApp = () => (
                     <Route path="/" element={<Main />} />
                     <Route path="/user" element={<User />} />
                     <Route path="/login" element={<MyAnimeListLogin />} />
+                    <Route path="/callback" element={<Callback />} />
                 </Routes>
             </div>
         </Router>
