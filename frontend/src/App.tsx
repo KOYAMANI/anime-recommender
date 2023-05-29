@@ -8,6 +8,7 @@ import User from './Pages/User'
 import Login from './Pages/Login'
 import { useEffect } from 'react'
 import { loginSuccess } from './redux/slices/authSlice'
+import MalLogin from './Pages/MalLogin'
 
 const App = () => {
     const dispatch = useDispatch()
@@ -32,6 +33,7 @@ const RootApp = () => (
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/user" element={<User />} />
+                    <Route path="/oauth" element={<MalLogin />} />
                 </Routes>
             </div>
         </Router>

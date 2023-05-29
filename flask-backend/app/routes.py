@@ -1,23 +1,27 @@
-from flask import Blueprint, request, jsonify
-from flask_cors import CORS, cross_origin
+import base64
+import json
+import os
+import random
+import requests
+import string
+from urllib.parse import urlencode
+
 from dotenv import load_dotenv
+from flask import Blueprint, request, jsonify, redirect, url_for, session, current_app
+from flask_cors import CORS, cross_origin
+from flask_jwt_extended import create_access_token
+from markupsafe import escape
 from werkzeug.security import generate_password_hash, check_password_hash
-from .cf_recommender import CFRecommender
-from .cb_recommender import CBRecommender
+
 from .api_handler import JikanAPIHandler
 from .anime_data_handler import AnimeDataHandler
+from .cb_recommender import CBRecommender
+from .cf_recommender import CFRecommender
 from .models.user import User
-from markupsafe import escape
-from flask_jwt_extended import create_access_token
-import requests
-import random
-import string
-import json
 from app import db
-from flask import current_app
+
 
 bp = Blueprint("routes", __name__)
-
 
 load_dotenv()
 
@@ -61,7 +65,7 @@ def sign_up():
 
 
 @bp.route("/api/login", methods=["POST"])
-@cross_origin()
+@cross_origin() 
 def log_in():
     data = request.get_json()
     email = data.get("email")
@@ -77,50 +81,67 @@ def log_in():
     access_token = create_access_token(identity=user.id)
     return jsonify(access_token=access_token, username=user.name), 200
 
-
-@bp.route("/login-with-mal", methods=["POST"])
+@bp.route("/api/authorize", methods=["GET"]) 
 @cross_origin()
-def login_with_mal():
-    # Get the code and code_verifier from the request body
-    code = request.json.get("code")
-    code_verifier = request.json.get("code_verifier")
+def mal_oauth():
+    def base64url_encode(data):
+        return base64.urlsafe_b64encode(data).rstrip(b'=')
+    code_verifier = base64url_encode(os.urandom(40)).decode('utf-8')
 
-    # Make sure the code and code_verifier are present
-    if not code or not code_verifier:
-        return (
-            jsonify({"error": "Authorization code or code verifier not provided"}),
-            400,
-        )
+    state = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(128))
+    
+    session['code_verifier'] = code_verifier
+    session['state'] = state
+    
+    parameters = {
+        "response_type": "code",
+        "client_id": "8056142dda9413a4411028bdbdb2541a",
+        "state": state,
+        "redirect_uri": url_for("routes.mal_callback", _external=True),
+        "code_challenge": code_verifier,
+        "code_challenge_method": "plain"   
+    }
+    url = "https://myanimelist.net/v1/oauth2/authorize?" + urlencode(parameters)
+    return redirect(url)
 
-    # Define the parameters for the token request
+@bp.route("/api/callback", methods=["GET"])
+@cross_origin()
+def mal_callback():
+    error = request.args.get("error")
+
+    if error:
+        print("An error occurred during authorization: ", error)
+        return jsonify({"error": error}), 400
+    
+    code = request.args.get("code")
+
+    code_verifier = session.get('code_verifier')
+    print('code_verifier: ', code_verifier)
+
+    # Service provider redirects back to your app with the authorization code
+    state = request.args.get("state")
+    original_state = session.get('state')
+    if state != original_state:
+        return jsonify({"error": "Invalid state parameter"}), 400
+ 
+    # Exchange the code for an access token
     data = {
         "client_id": "8056142dda9413a4411028bdbdb2541a",
         "client_secret": "791a1f95b94b4c994208be84a8b93da3cdb87c64acac469b9de9d1309e29e64b",
+        "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": "http://localhost:3000/callback",
-        "code_verifier": code_verifier,
+        "redirect_uri": url_for("routes.mal_callback", _external=True),
+        "code_verifier": code_verifier
     }
-
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    response = requests.post("https://myanimelist.net/v1/oauth2/token", data=data, headers=headers)
 
-    # Make the token request
-    response = requests.post(
-        "https://myanimelist.net/v1/oauth2/token", data=data, headers=headers
-    )
-
-    # Make sure the request was successful
     if response.status_code != 200:
-        return jsonify({"error": "Failed to exchange code for token"}), 500
+        return jsonify({"error": "Failed to retrieve access token"}), 400
+ 
+    access_token = response.json().get('access_token')
 
-    # Extract the access token from the response
-    access_token = response.json().get("access_token")
-
-    if not access_token:
-        return jsonify({"error": "Failed to obtain access token"}), 500
-
-    # Return the access token
-    return jsonify({"access_token": access_token})
-
+    return redirect(f"http://localhost:3000/home?token={access_token}")
 
 # Generate a code verifier
 @bp.route("/api/generate-code-verifier", methods=["GET"])

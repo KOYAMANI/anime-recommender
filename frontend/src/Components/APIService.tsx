@@ -81,58 +81,19 @@ export default class APIService {
         return res
     }
 
-    async user_login_mal(codeVerifier: string, code: string) {
-        // const params = new URLSearchParams(wisndow.location.search);
-        // const code = params.get('code');
-        if (!code) {
-            // Build the URL for MyAnimeList authorization
-            const url = new URL('https://myanimelist.net/v1/oauth2/authorize')
-            url.searchParams.append('response_type', 'code')
-            url.searchParams.append('client_id', 'your-client-id')
-            url.searchParams.append('code_challenge', codeVerifier)
-            url.searchParams.append('code_challenge_method', 'plain')
-            url.searchParams.append('state', 'your-state')
-            url.searchParams.append(
-                'redirect_uri',
-                'http://localhost:3000/callback'
-            )
-
-            // Redirect the user to MyAnimeList for authorization
-            window.location.href = url.href
-        } else {
-            // Exchange the authorization code for an access token
-            const res = await fetch(
-                '${process.env.REACT_APP_API_URL}api/log-in-with-mal',
-                {
-                    method: 'POST',
-                    headers: {
-                        code: code,
-                        code_verifier: codeVerifier,
-                    },
-                }
-            )
-                .then((res) => res.json())
-                .catch((err) => console.log(err))
-            console.log(res.data)
-
-            return res.data.access_token
-        }
+    async mal_oauth(codeVerfier: string){
+        const res = await fetch(`${process.env.REACT_APP_API_URL}api/authorize`, {
+            method: 'POST',
+            headers: {
+                cors: 'no-cors',
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+                'code_verifier': codeVerfier,
+            }),
+        })
+        console.log(res)
+        return res
     }
 
-    async generate_code_verifier() {
-        const res = await fetch(
-            `http://localhost:8080/api/generate-code-verifier`,
-            {
-                method: 'POST',
-            }
-        )
-            .then((res) => res.json())
-            .catch((err) => console.log(err))
-        if (res.message) {
-            throw Error(res.message)
-        } else {
-            console.log(res)
-            return res
-        }
-    }
 }

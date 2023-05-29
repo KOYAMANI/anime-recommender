@@ -37,6 +37,11 @@ def create_app():
         if not debug and secrets
         else os.getenv("X_MAL_CLIENT_ID")
     )
+    app.config["REACT_APP_URL"] = (
+        secrets["REACT_APP_URL"]
+        if not debug and secrets
+        else os.getenv("REACT_APP_URL")
+    )
     app.config["JWT_SECRET_KEY"] = (
         secrets["JWT_SECRET_KEY"]
         if not debug and secrets
@@ -55,6 +60,7 @@ def create_app():
     )
     app.config["MAL_API_HANDLER"] = mal_api_handler
 
+    app.secret_key = 'MY_SECRET_KEY'
     db.init_app(app)
     jwt = JWTManager(app)
     app.register_blueprint(bp)

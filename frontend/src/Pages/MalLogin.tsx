@@ -8,26 +8,18 @@ const MalLogin: React.FC = () => {
     const apiService = new APIService()
 
     useEffect(() => {
-        const getCodeVerifier = async () => {
-            const res = await apiService.generate_code_verifier()
-            setCodeVerifier(res.data.code_verifier)
-        }
-
-        getCodeVerifier()
     }, [])
 
-    const handleLogin = async () => {
-        const params = new URLSearchParams(window.location.search)
-        const code = params.get('code')
-
-        if (code) await apiService.user_login_mal(codeVerifier, code)
-    }
+    const handleLogin = () => {
+        const oauthUrl = `${process.env.REACT_APP_API_URL}api/authorize`; // assuming you have the base API URL in your .env file
+        window.open(oauthUrl, "_blank");
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <h1 className="text-3xl mb-4">Login</h1>
             <form
-                onSubmit={handleLogin}
+                onClick={handleLogin}
                 className="flex flex-col justify-center"
             >
                 <button
