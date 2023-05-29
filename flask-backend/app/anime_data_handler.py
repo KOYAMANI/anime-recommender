@@ -1,10 +1,8 @@
 import pandas as pd
 import json
 import re
-from os.path import join, dirname, realpath
 from .models.anime_data import AnimeData
 from .models.anime_name import AnimeName
-from flask import current_app
 
 
 class AnimeDataHandler:

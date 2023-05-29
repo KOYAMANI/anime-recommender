@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { loginSuccess } from '../redux/slices/authSlice'
 import APIService from '../Components/APIService'
 
+// TODO: Delete this file once MAL OAuth is done
 const Signup: React.FC = () => {
     const [email, setEmail] = useState('')
     const [username, setUsername] = useState('')

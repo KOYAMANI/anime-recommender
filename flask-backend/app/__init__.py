@@ -1,9 +1,11 @@
 import os
 import logging
+import json
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-import json
+
 from .api_handler import MalAPIHandler
 from .database import db
 from .routes import bp
@@ -32,10 +34,25 @@ def create_app():
     app.config["MAL_API_URL"] = (
         secrets["MAL_API_URL"] if not debug and secrets else os.getenv("MAL_API_URL")
     )
+    app.config["MAL_OAUTH_URL"] = (
+        secrets["MAL_OAUTH_URL"]
+        if not debug and secrets
+        else os.getenv("MAL_OAUTH_URL")
+    )
     app.config["X_MAL_CLIENT_ID"] = (
-        secrets["X_MAL_CLIENT_ID"]
+        secrets["X_MAL_CLIENT_ID_PROD"]
         if not debug and secrets
         else os.getenv("X_MAL_CLIENT_ID")
+    )
+    app.config["X_MAL_CLIENT_SECRET"] = (
+        secrets["X_MAL_CLIENT_SECRET_PROD"]
+        if not debug and secrets
+        else os.getenv("X_MAL_CLIENT_SECRET")
+    )
+    app.config["REACT_APP_URL"] = (
+        secrets["REACT_APP_URL_PROD"]
+        if not debug and secrets
+        else os.getenv("REACT_APP_URL")
     )
     app.config["JWT_SECRET_KEY"] = (
         secrets["JWT_SECRET_KEY"]
@@ -51,10 +68,15 @@ def create_app():
 
     # Initialize MyAnimeList API Handler here to pass env variables from application context
     mal_api_handler = MalAPIHandler(
-        app.config["MAL_API_URL"], app.config["X_MAL_CLIENT_ID"]
+        app.config["REACT_APP_URL"],
+        app.config["MAL_OAUTH_URL"],
+        app.config["MAL_API_URL"],
+        app.config["X_MAL_CLIENT_ID"],
+        app.config["X_MAL_CLIENT_SECRET"],
     )
     app.config["MAL_API_HANDLER"] = mal_api_handler
 
+    app.secret_key = "MY_SECRET_KEY"
     db.init_app(app)
     jwt = JWTManager(app)
     app.register_blueprint(bp)

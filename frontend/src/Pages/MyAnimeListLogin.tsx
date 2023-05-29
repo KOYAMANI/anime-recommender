@@ -1,33 +1,38 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { loginSuccess } from '../redux/slices/authSlice'
 
 import APIService from '../Components/APIService'
 
-const MalLogin: React.FC = () => {
+const MyAnimeListLogin: React.FC = () => {
     const [error, setError] = useState('')
     const [codeVerifier, setCodeVerifier] = useState('')
+
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+
     const apiService = new APIService()
 
     useEffect(() => {
-        const getCodeVerifier = async () => {
-            const res = await apiService.generate_code_verifier()
-            setCodeVerifier(res.data.code_verifier)
-        }
-
-        getCodeVerifier()
-    }, [])
+        const token = localStorage.getItem('token')
+        if (token) navigate('/user')
+        else console.log('not authenticated')
+    }, [navigate])
 
     const handleLogin = async () => {
-        const params = new URLSearchParams(window.location.search)
-        const code = params.get('code')
-
-        if (code) await apiService.user_login_mal(codeVerifier, code)
+        const oauthUrl = await apiService.getOAuthUrl()
+        window.location.href = oauthUrl
     }
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <h1 className="text-3xl mb-4">Login</h1>
             <form
-                onSubmit={handleLogin}
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    handleLogin()
+                }}
                 className="flex flex-col justify-center"
             >
                 <button
@@ -42,4 +47,4 @@ const MalLogin: React.FC = () => {
     )
 }
 
-export default MalLogin
+export default MyAnimeListLogin
