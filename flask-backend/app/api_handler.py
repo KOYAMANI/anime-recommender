@@ -13,12 +13,14 @@ class MalAPIHandler:
         react_app_url,
         mal_oauth_url,
         mal_api_url,
+        mal_api_callback_url,
         x_mal_client_id,
         x_mal_client_secret,
     ):
         self.REACT_APP_URL = react_app_url
         self.MAL_OAUTH_URL = mal_oauth_url
         self.MAL_API_URL = mal_api_url
+        self.MAL_API_CALLBACK_URL = mal_api_callback_url
         self.X_MAL_CLIENT_ID = x_mal_client_id
         self.X_MAL_CLIENT_SECRET = x_mal_client_secret
 
@@ -28,6 +30,7 @@ class MalAPIHandler:
         react_app_url=None,
         mal_oauth_url=None,
         mal_api_url=None,
+        mal_api_callback_url = None,
         x_mal_client_id=None,
         x_mal_client_secret=None,
     ):
@@ -36,6 +39,7 @@ class MalAPIHandler:
                 react_app_url,
                 mal_oauth_url,
                 mal_api_url,
+                mal_api_callback_url,
                 x_mal_client_id,
                 x_mal_client_secret,
             )
@@ -67,14 +71,14 @@ class MalAPIHandler:
             "response_type": "code",
             "client_id": self.X_MAL_CLIENT_ID,
             "state": state,
-            "redirect_uri": url_for("routes.mal_callback", _external=True),
+            "redirect_uri": self.MAL_API_CALLBACK_URL + "api/v1/oauth/callback",
             "code_challenge": code_verifier,
             "code_challenge_method": "plain",
         }
         url = self.MAL_OAUTH_URL + "authorize?" + urlencode(params)
         return url
 
-    def get_access_token(self, code, code_verifier, callback_url):
+    def get_access_token(self, code, code_verifier):
         if not self.MAL_OAUTH_URL:
             return {"message": "Invalid URL"}
         data = {
@@ -82,7 +86,7 @@ class MalAPIHandler:
             "client_secret": self.X_MAL_CLIENT_SECRET,
             "grant_type": "authorization_code",
             "code": code,
-            "redirect_uri": callback_url,
+            "redirect_uri": self.MAL_API_CALLBACK_URL + "api/v1/oauth/callback",
             "code_verifier": code_verifier,
         }
         headers = {"Content-Type": "application/x-www-form-urlencoded"}

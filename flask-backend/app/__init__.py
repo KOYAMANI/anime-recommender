@@ -23,6 +23,7 @@ def create_app():
         secrets_json = os.getenv("SECRETS_JSON")
         if secrets_json:
             secrets = json.loads(secrets_json)
+            print(secrets)
         else:
             raise ValueError("SECRETS_JSON is not set")
 
@@ -33,6 +34,9 @@ def create_app():
     )
     app.config["MAL_API_URL"] = (
         secrets["MAL_API_URL"] if not debug and secrets else os.getenv("MAL_API_URL")
+    )
+    app.config["MAL_API_CALLBACK_URL"] = (
+        secrets["MAL_API_CALLBACK_URL_PROD"] if not debug and secrets else os.getenv("MAL_API_CALLBACK_URL")
     )
     app.config["MAL_OAUTH_URL"] = (
         secrets["MAL_OAUTH_URL"]
@@ -71,6 +75,7 @@ def create_app():
         app.config["REACT_APP_URL"],
         app.config["MAL_OAUTH_URL"],
         app.config["MAL_API_URL"],
+        app.config["MAL_API_CALLBACK_URL"],
         app.config["X_MAL_CLIENT_ID"],
         app.config["X_MAL_CLIENT_SECRET"],
     )
