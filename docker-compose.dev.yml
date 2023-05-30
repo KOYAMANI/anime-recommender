@@ -23,6 +23,7 @@ services:
       - "8080:8080"
     depends_on:
       - postgres-db
+      - redis-db
     volumes:
       - ./flask-backend:/app
 
@@ -36,3 +37,8 @@ services:
       - "5432:5432"
     volumes:
       - ./postgres-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis-db:
+    image: redis:latest
+    ports:
+      - "6379:6379"
