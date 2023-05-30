@@ -2,28 +2,25 @@ import base64
 import json
 import os
 import random
-import requests
 import string
 from urllib.parse import urlencode
 
 from dotenv import load_dotenv
-from flask import Blueprint, request, jsonify, redirect, url_for, session, current_app
+from flask import Blueprint, request, jsonify, redirect, current_app
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from app import db
 from .api_handler import JikanAPIHandler
 from .anime_data_handler import AnimeDataHandler
 from .cb_recommender import CBRecommender
 from .cf_recommender import CFRecommender
 from .models.user import User
-from app import db
-
-
-bp = Blueprint("routes", __name__)
 
 load_dotenv()
 
+bp = Blueprint("routes", __name__)
 cors = CORS(bp, resources={r"/api/*": {"origins": "*"}})
 
 jikan_handler = JikanAPIHandler()
@@ -39,18 +36,19 @@ def hello():
 @cross_origin()
 def mal_oauth():
     mal_api_handler = current_app.config["MAL_API_HANDLER"]
+    redis_helper = current_app.config["REDIS_HELPER"]
 
     def base64url_encode(data):
         return base64.urlsafe_b64encode(data).rstrip(b"=")
 
     code_verifier = base64url_encode(os.urandom(40)).decode("utf-8")
-
     state = "".join(
         random.choice(string.ascii_letters + string.digits) for _ in range(128)
     )
 
-    session["code_verifier"] = code_verifier
-    session["state"] = state
+    redis_client = redis_helper.get_client()
+    redis_client.set("code_verifier", json.dumps(code_verifier))
+    redis_client.set("state", json.dumps(state))
 
     url = mal_api_handler.user_oauth_authorize(state, code_verifier)
     return redirect(url)
@@ -60,6 +58,9 @@ def mal_oauth():
 @cross_origin()
 def mal_callback():
     mal_api_handler = current_app.config["MAL_API_HANDLER"]
+    redis_helper = current_app.config["REDIS_HELPER"]
+
+    redis_client = redis_helper.get_client()
 
     error = request.args.get("error")
     if error:
@@ -67,16 +68,14 @@ def mal_callback():
         return jsonify({"error": error}), 400
 
     code = request.args.get("code")
-    code_verifier = session.get("code_verifier")
+    code_verifier = json.loads(redis_client.get("code_verifier"))
 
     state = request.args.get("state")
-    original_state = session.get("state")
+    original_state = json.loads(redis_client.get("state"))
     if state != original_state:
         return jsonify({"error": "Invalid state parameter"}), 400
 
-    access_token, error = mal_api_handler.get_access_token(
-        code, code_verifier
-    )
+    access_token, error = mal_api_handler.get_access_token(code, code_verifier)
     if not access_token:
         return (
             jsonify({"error": "Failed to retrieve access token", "details": error}),

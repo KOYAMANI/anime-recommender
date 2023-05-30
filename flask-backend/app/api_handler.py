@@ -30,7 +30,7 @@ class MalAPIHandler:
         react_app_url=None,
         mal_oauth_url=None,
         mal_api_url=None,
-        mal_api_callback_url = None,
+        mal_api_callback_url=None,
         x_mal_client_id=None,
         x_mal_client_secret=None,
     ):

@@ -3,12 +3,11 @@ import logging
 import json
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-from flask_redis import FlaskRedis
 
 from .api_handler import MalAPIHandler
-from .database import db
+from .helpers.database_helper import db
+from .helpers.redis_helper import RedisHelper
 from .routes import bp
 
 
@@ -27,16 +26,7 @@ def create_app():
             print(secrets)
         else:
             raise ValueError("SECRETS_JSON is not set")
-        
-        app.config['SESSION_TYPE'] = 'redis'
-        app.config['REDIS_URL'] ='redis://clustercfg.anime-recommender-redis.zkp22p.euc1.cache.amazonaws.com:6379'
-        try:
-            redis_client = FlaskRedis(app)
-            if not redis_client.ping():
-                app.logger.error("Could not establish connection with Redis.")
-        except ConnectionError:
-            app.logger.error("Could not establish connection with Redis.")
-        
+
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         secrets["SQLALCHEMY_DATABASE_URI_PROD"]
         if not debug and secrets
@@ -47,7 +37,9 @@ def create_app():
         secrets["MAL_API_URL"] if not debug and secrets else os.getenv("MAL_API_URL")
     )
     app.config["MAL_API_CALLBACK_URL"] = (
-        secrets["MAL_API_CALLBACK_URL_PROD"] if not debug and secrets else os.getenv("MAL_API_CALLBACK_URL")
+        secrets["MAL_API_CALLBACK_URL_PROD"]
+        if not debug and secrets
+        else os.getenv("MAL_API_CALLBACK_URL")
     )
     app.config["MAL_OAUTH_URL"] = (
         secrets["MAL_OAUTH_URL"]
@@ -93,6 +85,13 @@ def create_app():
     app.config["MAL_API_HANDLER"] = mal_api_handler
 
     app.secret_key = "MY_SECRET_KEY"
+
+    app.config["REDIS_URL"] = (
+        secrets["REDIS_URL_PROD"] if not debug and secrets else os.getenv("REDIS_URL")
+    )
+    redis_helper = RedisHelper(app.config["REDIS_URL"])
+    app.config["REDIS_HELPER"] = redis_helper
+
     db.init_app(app)
     jwt = JWTManager(app)
     app.register_blueprint(bp)
