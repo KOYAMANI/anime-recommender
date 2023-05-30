@@ -5,6 +5,7 @@ import json
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
+from flask_redis import FlaskRedis
 
 from .api_handler import MalAPIHandler
 from .database import db
@@ -26,12 +27,22 @@ def create_app():
             print(secrets)
         else:
             raise ValueError("SECRETS_JSON is not set")
-
+        
+        app.config['SESSION_TYPE'] = 'redis'
+        app.config['REDIS_URL'] ='redis://clustercfg.anime-recommender-redis.zkp22p.euc1.cache.amazonaws.com:6379'
+        try:
+            redis_client = FlaskRedis(app)
+            if not redis_client.ping():
+                app.logger.error("Could not establish connection with Redis.")
+        except ConnectionError:
+            app.logger.error("Could not establish connection with Redis.")
+        
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         secrets["SQLALCHEMY_DATABASE_URI_PROD"]
         if not debug and secrets
         else os.getenv("SQLALCHEMY_DATABASE_URI_DEV")
     )
+
     app.config["MAL_API_URL"] = (
         secrets["MAL_API_URL"] if not debug and secrets else os.getenv("MAL_API_URL")
     )
