@@ -1,5 +1,6 @@
 import redis
 
+
 class RedisHelper:
     _instance = None
 

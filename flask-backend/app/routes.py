@@ -2,12 +2,11 @@ import base64
 import json
 import os
 import random
-import requests
 import string
 from urllib.parse import urlencode
 
 from dotenv import load_dotenv
-from flask import Blueprint, request, jsonify, redirect, url_for, current_app, session
+from flask import Blueprint, request, jsonify, redirect, current_app
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -25,6 +24,7 @@ bp = Blueprint("routes", __name__)
 cors = CORS(bp, resources={r"/api/*": {"origins": "*"}})
 
 jikan_handler = JikanAPIHandler()
+
 
 @bp.route("/api/health", methods=["GET"])
 @cross_origin()
@@ -47,8 +47,8 @@ def mal_oauth():
     )
 
     redis_client = redis_helper.get_client()
-    redis_client.set('code_verifier', json.dumps(code_verifier))
-    redis_client.set('state', json.dumps(state))
+    redis_client.set("code_verifier", json.dumps(code_verifier))
+    redis_client.set("state", json.dumps(state))
 
     url = mal_api_handler.user_oauth_authorize(state, code_verifier)
     return redirect(url)
@@ -68,16 +68,14 @@ def mal_callback():
         return jsonify({"error": error}), 400
 
     code = request.args.get("code")
-    code_verifier = json.loads(redis_client.get('code_verifier'))
+    code_verifier = json.loads(redis_client.get("code_verifier"))
 
     state = request.args.get("state")
-    original_state = json.loads(redis_client.get('state'))
+    original_state = json.loads(redis_client.get("state"))
     if state != original_state:
         return jsonify({"error": "Invalid state parameter"}), 400
 
-    access_token, error = mal_api_handler.get_access_token(
-        code, code_verifier
-    )
+    access_token, error = mal_api_handler.get_access_token(code, code_verifier)
     if not access_token:
         return (
             jsonify({"error": "Failed to retrieve access token", "details": error}),

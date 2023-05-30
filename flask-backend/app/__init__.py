@@ -37,7 +37,9 @@ def create_app():
         secrets["MAL_API_URL"] if not debug and secrets else os.getenv("MAL_API_URL")
     )
     app.config["MAL_API_CALLBACK_URL"] = (
-        secrets["MAL_API_CALLBACK_URL_PROD"] if not debug and secrets else os.getenv("MAL_API_CALLBACK_URL")
+        secrets["MAL_API_CALLBACK_URL_PROD"]
+        if not debug and secrets
+        else os.getenv("MAL_API_CALLBACK_URL")
     )
     app.config["MAL_OAUTH_URL"] = (
         secrets["MAL_OAUTH_URL"]
@@ -84,14 +86,10 @@ def create_app():
 
     app.secret_key = "MY_SECRET_KEY"
 
-    app.config['REDIS_URL'] = (
-        secrets['REDIS_URL_PROD']
-        if not debug and secrets
-        else os.getenv('REDIS_URL')
+    app.config["REDIS_URL"] = (
+        secrets["REDIS_URL_PROD"] if not debug and secrets else os.getenv("REDIS_URL")
     )
-    redis_helper = RedisHelper(
-        app.config['REDIS_URL']
-    )
+    redis_helper = RedisHelper(app.config["REDIS_URL"])
     app.config["REDIS_HELPER"] = redis_helper
 
     db.init_app(app)
