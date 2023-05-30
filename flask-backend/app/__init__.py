@@ -89,7 +89,7 @@ def create_app():
     app.config["REDIS_URL"] = (
         secrets["REDIS_URL_PROD"] if not debug and secrets else os.getenv("REDIS_URL")
     )
-    redis_helper = RedisHelper(app.config["REDIS_URL"])
+    redis_helper = RedisHelper(debug, app.config["REDIS_URL"])
     app.config["REDIS_HELPER"] = redis_helper
 
     db.init_app(app)
