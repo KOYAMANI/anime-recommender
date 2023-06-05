@@ -5,40 +5,39 @@ from app import db
 
 class AnimeData(db.Model):
     __tablename__ = "anime_data"
-    # TODO: rename db column name to snake case instead of camel case with space
-    MAL_ID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(255), nullable=False)
-    Score = db.Column(db.Float, nullable=True)
-    Genres = db.Column(db.String(255), nullable=True)
-    Episodes = db.Column(db.Integer, nullable=True)
-    Premiered = db.Column(db.String(255), nullable=True)
-    Studios = db.Column(db.String(255), nullable=True)
-    Members = db.Column(db.Integer, nullable=True)
-    Completed = db.Column(db.Integer, nullable=True)
-    Dropped_rate = db.Column("Dropped rate", db.Float, nullable=True)
+    mal_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    score = db.Column(db.Float, nullable=True)
+    genres = db.Column(db.String(255), nullable=True)
+    episodes = db.Column(db.Integer, nullable=True)
+    premiered = db.Column(db.String(255), nullable=True)
+    studios = db.Column(db.String(255), nullable=True)
+    members = db.Column(db.Integer, nullable=True)
+    completed = db.Column(db.Integer, nullable=True)
+    dropped_rate = db.Column(db.Float, nullable=True)
 
     def to_dict(self):
         return {
-            "MAL_ID": self.MAL_ID,
-            "Name": self.Name,
-            "Score": self.Score,
-            "Genres": self.Genres,
-            "Episodes": self.Episodes,
-            "Premiered": self.Premiered,
-            "Studios": self.Studios,
-            "Members": self.Members,
-            "Completed": self.Completed,
-            "Dropped_rate": self.Dropped_rate,
+            "mal_id": self.mal_id,
+            "name": self.name,
+            "score": self.score,
+            "genres": self.genres,
+            "episodes": self.episodes,
+            "premiered": self.premiered,
+            "studios": self.studios,
+            "members": self.members,
+            "completed": self.completed,
+            "dropped_rate": self.dropped_rate,
         }
 
     def __repr__(self):
         return f"<AnimeData MAL_ID={self.MAL_ID}, \
-            Name={self.Name}, \
-            Score={self.Score}, \
-            Genres={self.Genres}, \
-            Episodes={self.Episodes}, \
-            Premiered={self.Premiered}, \
-            Studios={self.Studios}, \
-            Members={self.Members}, \
-            Completed={self.Completed}, \
-            Dropped_rate={self.Dropped_rate}>"
+            name={self.name}, \
+            score={self.score}, \
+            genres={self.genres}, \
+            episodes={self.episodes}, \
+            premiered={self.premiered}, \
+            studios={self.studios}, \
+            members={self.members}, \
+            completed={self.completed}, \
+            dropped_rate={self.dropped_rate}>"
