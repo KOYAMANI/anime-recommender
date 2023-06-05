@@ -2,6 +2,7 @@ import urllib.parse
 import redis
 from rediscluster import RedisCluster
 
+
 class RedisHelper:
     _instance = None
 
@@ -28,7 +29,11 @@ class RedisHelper:
             redis_client = redis.Redis(host=host, port=port)
         elif self.DEBUG == False:
             startup_nodes = [{"host": host, "port": port}]
-            redis_client = RedisCluster(startup_nodes=startup_nodes, decode_responses=True, skip_full_coverage_check=True)
+            redis_client = RedisCluster(
+                startup_nodes=startup_nodes,
+                decode_responses=True,
+                skip_full_coverage_check=True,
+            )
         else:
             raise ValueError("Invalid App environment")
         return redis_client
