@@ -70,10 +70,10 @@ def mal_callback():
 
     # Get code and state from request and compare them with the one in cache
     code = request.args.get("code")
-    code_verifier = redis_client.get("code_verifier")
+    code_verifier = json.loads(redis_client.get("code_verifier"))
 
     state = request.args.get("state")
-    original_state = redis_client.get("state")
+    original_state = json.loads(redis_client.get("state"))
     if state != original_state:
         return jsonify({"error": "Invalid state parameter"}), 400
 
