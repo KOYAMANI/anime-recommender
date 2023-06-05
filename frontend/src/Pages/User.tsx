@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import APIService from '../Components/APIService'
 
 const User: React.FC = () => {
     const [username, setUsername] = useState('')
+    const [userId, setUserId] = useState('')
     const navigate = useNavigate()
+    const apiService = new APIService()
 
     useEffect(() => {
         const token = localStorage.getItem('token')
@@ -12,6 +15,15 @@ const User: React.FC = () => {
         const userName = localStorage.getItem('userName')
         if (userName) setUsername(userName)
         else console.log('no username')
+
+        const userId = localStorage.getItem('userId')
+        if (userId) {
+            setUserId(userId)
+            apiService.getUserHistory(userId).then((res) => {
+            console.log(res)
+            })
+        } else console.log('no userId')
+
     }, [navigate])
 
     return (

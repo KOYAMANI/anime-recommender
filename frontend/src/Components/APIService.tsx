@@ -12,9 +12,9 @@ export default class APIService {
         return res
     }
 
-    async getRecommendation(title: string) {
+    async getRecommendation(title: string, userId?: string) {
         const res = await fetch(
-            `${process.env.REACT_APP_API_URL}api/v1/anime/recommend`,
+            `${process.env.REACT_APP_API_URL}api/v1/anime/recommend/${userId}`,
             {
                 method: 'POST',
                 headers: {
@@ -48,40 +48,19 @@ export default class APIService {
         return res.json()
     }
 
-    async user_signup(name: string, email: string, password: string) {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}api/signup`, {
-            method: 'POST',
-            headers: {
-                cors: 'no-cors',
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name,
-                email: email,
-                password: password,
-            }),
-        })
-        const data = await res.json()
-        if (!res.ok) throw new Error(`${res.status}: ${data.error}`)
-        return data
-    }
-
-    async user_login(email: string, password: string) {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}api/login`, {
-            method: 'POST',
-            headers: {
-                cors: 'no-cors',
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-            }),
-        })
-            .then((res) => res.json())
-            .catch((err) => console.log(err))
-        console.log(res)
-        return res
+    async getUserHistory(userId: string) {
+        const res = await fetch(
+            `${process.env.REACT_APP_API_URL}api/v1/users/history/${userId}`,
+            {
+                method: 'GET',
+                headers: {
+                    cors: 'no-cors',
+                    'content-type': 'application/json',
+                },
+            }
+        )
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+        return res.json()
     }
 
     async getOAuthUrl() {

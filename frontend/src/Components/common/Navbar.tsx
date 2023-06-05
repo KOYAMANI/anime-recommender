@@ -34,7 +34,7 @@ const Navbar: React.FC = () => {
             {auth ? (
                 <div className="flex space-x-2">
                     <div>
-                        <p>logged in</p>
+                        <p>log out</p>
                     </div>
                     <Link to="/login">
                         <CiLogout

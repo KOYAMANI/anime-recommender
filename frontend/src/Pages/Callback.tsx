@@ -13,6 +13,7 @@ const Callback: React.FC = () => {
         const urlParams = new URLSearchParams(window.location.search)
         const token = urlParams.get('token')
         const userName = urlParams.get('userName')
+        const userId = urlParams.get('userId')
 
         if (token) {
             localStorage.setItem('token', token)
@@ -20,6 +21,7 @@ const Callback: React.FC = () => {
                 loginSuccess({
                     token: token,
                     userName: userName,
+                    userId: userId,
                 })
             )
             navigate('/user')

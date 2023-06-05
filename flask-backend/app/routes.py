@@ -17,6 +17,7 @@ from .anime_data_handler import AnimeDataHandler
 from .cb_recommender import CBRecommender
 from .cf_recommender import CFRecommender
 from .models.user import Users
+from .models.users_history import UsersHistory
 
 load_dotenv()
 
@@ -117,7 +118,7 @@ def get_image():
                 res = mal_api_handler.get_anime_image(title)
                 return res, 200
             except KeyError:
-                return json.loads('{"message": "Anime not found!"}'), 404
+                return json.loads('{"message": "Anime not found!"}'), 400
         else:
             return "Method not supported!", 400
     else:
@@ -125,10 +126,10 @@ def get_image():
 
 
 # TODO: Decide which recommender to use and activate either one
-@bp.route("/api/v1/anime/recommend", methods=["POST"])
+@bp.route("/api/v1/anime/recommend/", defaults={'user_mal_id': None}, methods=["POST"])
+@bp.route("/api/v1/anime/recommend/<user_mal_id>", methods=["POST"])
 @cross_origin()
-def rec_with_image():
-    mal_api_handler = current_app.config["MAL_API_HANDLER"]
+def rec_with_image(user_mal_id):
     if request.headers.get("Content-Type") != "application/json":
         return "Content-Type not supported!", 400
     if request.method != "POST":
@@ -139,18 +140,12 @@ def rec_with_image():
         cb_recommender = CBRecommender.get_instance()
         recommendation = json.loads(cb_recommender.get_rec(title))
         anime_ids = recommendation["id"]
-        res = [
-            {
-                "title": mal_api_handler.get_anime_title(id),
-                "image_url": mal_api_handler.get_anime_image(id),
-            }
-            for id in anime_ids
-        ]
-        print("{0}: {1}".format(title, res[-1]["image_url"]))
+        res = image_from_id(anime_ids)
+        if user_mal_id is not None and user_mal_id != 'undefined':
+            post_user_history(user_mal_id, anime_ids)
         return res, 200
     except KeyError:
-        return json.loads('{"message": "Anime not found!"}'), 404
-
+        return json.loads('{"message": "Anime not found!"}'), 400
 
 @bp.route("/api/v1/search-suggestion", methods=["POST"])
 @cross_origin()
@@ -166,44 +161,59 @@ def get_suggestions():
         res = json.loads(anime_data_handler.search_anime_titles(title))
         return res, 200
     except KeyError:
-        return json.loads('{"message": "Anime not found!"}'), 404
+        return json.loads('{"message": "Anime not found!"}'), 400
 
-
-@bp.route("/api/v2/anime", methods=["POST"])
+@bp.route("/api/v1/users/history", methods=["POST"])
 @cross_origin()
-def get_anime_v2():
-    if request.headers.get("Content-Type") != "application/json":
-        return "Content-Type not supported!", 400
-    if request.method != "POST":
-        return "Method not supported!", 400
+def post_user_history(user_mal_id, anime_ids):
+    user = Users.query.filter_by(mal_id=user_mal_id).first()
+    if user:
+        users_history = UsersHistory.query.filter_by(user_id=user.id).first()
 
-    title = request.get_json()["title"]
+        if users_history:
+            users_history.last_searched = anime_ids
+        else:
+            new_users_history = UsersHistory(
+                user_id = user.id,
+                last_searched = anime_ids
+            )
+            db.session.add(new_users_history)
+        
+        db.session.commit()
+        return jsonify({"message": "ok"}), 200
+    else:
+        return jsonify({"error": "Failed to register user history: User not found"}), 400
+    
+@bp.route("/api/v1/users/history/<user_mal_id>", methods=["GET"])
+@cross_origin()
+def get_user_history(user_mal_id):
+    user = Users.query.filter_by(mal_id=user_mal_id).first()
+    if user:
+        users_history = UsersHistory.query.filter_by(user_id=user.id).first()
+
+        if users_history:
+            anime_ids = users_history.last_searched
+            res = image_from_id(anime_ids)
+            return res, 200
+        else:
+            return jsonify({"error": "User does not have search history"}), 400
+
+    else:
+        return jsonify({"error": "Failed to register user history: User not found"}), 400
+
+def image_from_id(anime_ids):
+    mal_api_handler = current_app.config["MAL_API_HANDLER"]
     try:
-        res = jikan_handler.get_anime_info(title)
-        return res, 200
+        res = [
+            {
+                "title": mal_api_handler.get_anime_title(id),
+                "image_url": mal_api_handler.get_anime_image(id),
+            }
+            for id in anime_ids
+        ]
+        return res
     except KeyError:
-        return json.loads('{"message": "Anime not found!"}'), 404
-
-
-@bp.route("/api/v2/anime/name", methods=["GET"])
-@cross_origin()
-def get_anime_name_v2():
-    anime_data_handler = AnimeDataHandler.get_instance()
-    df = anime_data_handler.load_anime_name()
-    res = df.head(5)
-    return res.to_json(), 200
-
-
-@bp.route("/api/v2/anime/image/<id>", methods=["POST"])
-@cross_origin()
-def get_image_v2(id):
-    if request.method != "POST":
-        return "Method not supported!", 400
-    try:
-        res = jikan_handler.get_anime_picture(id)
-        return res, 200
-    except KeyError:
-        return json.loads('{"message": "Anime not found!"}'), 404
+        return json.loads('{"message": "Anime not found!"}')
 
 
 # v1 api routes
@@ -234,3 +244,39 @@ def get_image_v2(id):
 #             return 'Method not supported!'
 #     else:
 #         return 'Content-Type not supported!'
+
+# @bp.route("/api/v2/anime", methods=["POST"])
+# @cross_origin()
+# def get_anime_v2():
+#     if request.headers.get("Content-Type") != "application/json":
+#         return "Content-Type not supported!", 400
+#     if request.method != "POST":
+#         return "Method not supported!", 400
+
+#     title = request.get_json()["title"]
+#     try:
+#         res = jikan_handler.get_anime_info(title)
+#         return res, 200
+#     except KeyError:
+#         return json.loads('{"message": "Anime not found!"}'), 400
+
+
+# @bp.route("/api/v2/anime/name", methods=["GET"])
+# @cross_origin()
+# def get_anime_name_v2():
+#     anime_data_handler = AnimeDataHandler.get_instance()
+#     df = anime_data_handler.load_anime_name()
+#     res = df.head(5)
+#     return res.to_json(), 200
+
+
+# @bp.route("/api/v2/anime/image/<id>", methods=["POST"])
+# @cross_origin()
+# def get_image_v2(id):
+#     if request.method != "POST":
+#         return "Method not supported!", 400
+#     try:
+#         res = jikan_handler.get_anime_picture(id)
+#         return res, 200
+#     except KeyError:
+#         return json.loads('{"message": "Anime not found!"}'), 400

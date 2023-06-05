@@ -13,8 +13,10 @@ const Main: React.FC = () => {
     const [error, setError] = useState('')
     const [animes, setAnimes] = useState([])
     const [searchResults, setSearchResults] = useState([])
-    // const [isLoading, setIsLoading] = useState(false)
     const [showSuggestions, setShowSuggestions] = useState(false)
+    const userId = useSelector((state: RootState) => state.auth.userId)
+        ? localStorage.getItem('userId')
+        : undefined
 
     const apiService = new APIService()
 
@@ -75,15 +77,15 @@ const Main: React.FC = () => {
             dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
         } else {
             apiService
-                .getRecommendation(title)
+                .getRecommendation(title, userId || undefined)
                 .then((res) => {
                     setAnimes(res)
                     setTitle('')
-                    dispatch(finishLoading('FETCH_RECOMMENDATIONS')) // Moved this here
+                    dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
                 })
                 .catch((err) => {
                     setError(err.message)
-                    dispatch(finishLoading('FETCH_RECOMMENDATIONS')) // And here
+                    dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
                 })
         }
     }

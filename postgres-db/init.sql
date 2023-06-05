@@ -16,6 +16,20 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -72,6 +86,7 @@ ALTER TABLE public.users OWNER TO admin;
 --
 
 CREATE TABLE public.users_history (
+    id uuid NOT NULL,
     user_id uuid,
     last_searched integer[]
 );
@@ -20091,8 +20106,16 @@ COPY public.users (id, name, mal_id) FROM stdin;
 -- Data for Name: users_history; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
-COPY public.users_history (user_id, last_searched) FROM stdin;
+COPY public.users_history (user_id, last_searched, id) FROM stdin;
 \.
+
+
+--
+-- Name: users_history users_history_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users_history
+    ADD CONSTRAINT users_history_pkey PRIMARY KEY (id);
 
 
 --

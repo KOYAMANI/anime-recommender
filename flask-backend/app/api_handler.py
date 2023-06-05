@@ -117,7 +117,7 @@ class MalAPIHandler:
         if not self.REACT_APP_URL:
             return {"message": "Invalid URL"}
         return redirect(
-            f"{self.REACT_APP_URL}callback?token={token}&userName={user_name}&userid={user_id}"
+            f"{self.REACT_APP_URL}callback?token={token}&userName={user_name}&userId={user_id}"
         )
 
     def get_anime_title(self, anime_id):
