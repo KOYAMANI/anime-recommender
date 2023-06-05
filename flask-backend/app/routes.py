@@ -70,10 +70,10 @@ def mal_callback():
 
     # Get code and state from request and compare them with the one in cache
     code = request.args.get("code")
-    code_verifier = json.loads(redis_client.get("code_verifier"))
+    code_verifier = redis_client.get("code_verifier")
 
     state = request.args.get("state")
-    original_state = json.loads(redis_client.get("state"))
+    original_state = redis_client.get("state")
     if state != original_state:
         return jsonify({"error": "Invalid state parameter"}), 400
 
@@ -126,34 +126,58 @@ def get_image():
 
 
 # TODO: Decide which recommender to use and activate either one
-@bp.route("/api/v1/anime/recommend/", defaults={'user_mal_id': None}, methods=["POST"])
+@bp.route("/api/v1/anime/recommend/", defaults={"user_mal_id": None}, methods=["POST"])
 @bp.route("/api/v1/anime/recommend/<user_mal_id>", methods=["POST"])
 @cross_origin()
 def rec_with_image(user_mal_id):
+    mal_api_handler = current_app.config["MAL_API_HANDLER"]
     if request.headers.get("Content-Type") != "application/json":
-        return "Content-Type not supported!", 400
+        return jsonify({"error": "Content-Type not supported!"}), 400
     if request.method != "POST":
-        return "Method not supported!", 400
+        return jsonify({"error": "Method not supported!"}), 400
 
     title = request.get_json()["title"]
     try:
         cb_recommender = CBRecommender.get_instance()
         recommendation = json.loads(cb_recommender.get_rec(title))
         anime_ids = recommendation["id"]
-        res = image_from_id(anime_ids)
-        if user_mal_id is not None and user_mal_id != 'undefined':
-            post_user_history(user_mal_id, anime_ids)
+        anime_names = []
+        image_urls = []
+        res = []
+        for id in anime_ids:
+            title = mal_api_handler.get_anime_title(id)
+            image_url = mal_api_handler.get_anime_image(id)
+            res.append(
+                {
+                    "title": title,
+                    "image_url": image_url,
+                }
+            )
+            anime_names.append(title)
+            image_urls.append(image_url)
+        if (
+            len(anime_ids) != len(anime_names)
+            or len(anime_ids) != len(image_urls)
+            or len(anime_names) != len(image_urls)
+        ):
+            return (
+                jsonify({"error": "Failed to retrieve anime id, name or image url "}),
+                400,
+            )
+        if user_mal_id is not None and user_mal_id != "undefined":
+            post_user_history(user_mal_id, anime_ids, anime_names, image_urls)
         return res, 200
     except KeyError:
-        return json.loads('{"message": "Anime not found!"}'), 400
+        return jsonify({"message": "Anime not found!"}), 400
+
 
 @bp.route("/api/v1/search-suggestion", methods=["POST"])
 @cross_origin()
 def get_suggestions():
     if request.headers.get("Content-Type") != "application/json":
-        return "Content-Type not supported!", 400
+        return jsonify({"error": "Content-Type not supported!"}), 400
     if request.method != "POST":
-        return "Method not supported!", 400
+        return jsonify({"error": "Method not supported!"}), 400
 
     title = request.get_json()["title"]
     try:
@@ -161,29 +185,38 @@ def get_suggestions():
         res = json.loads(anime_data_handler.search_anime_titles(title))
         return res, 200
     except KeyError:
-        return json.loads('{"message": "Anime not found!"}'), 400
+        return jsonify({"message": "Anime not found!"}), 400
+
 
 @bp.route("/api/v1/users/history", methods=["POST"])
 @cross_origin()
-def post_user_history(user_mal_id, anime_ids):
+def post_user_history(user_mal_id, anime_ids, anime_names, anime_image_urls):
     user = Users.query.filter_by(mal_id=user_mal_id).first()
     if user:
         users_history = UsersHistory.query.filter_by(user_id=user.id).first()
 
         if users_history:
-            users_history.last_searched = anime_ids
+            users_history.anime_ids = anime_ids
+            users_history.anime_names = anime_names
+            users_history.anime_image_urls = anime_image_urls
         else:
             new_users_history = UsersHistory(
-                user_id = user.id,
-                last_searched = anime_ids
+                user_id=user.id,
+                anime_ids=anime_ids,
+                anime_names=anime_names,
+                anime_image_urls=anime_image_urls,
             )
             db.session.add(new_users_history)
-        
+
         db.session.commit()
         return jsonify({"message": "ok"}), 200
     else:
-        return jsonify({"error": "Failed to register user history: User not found"}), 400
-    
+        return (
+            jsonify({"error": "Failed to register user history: User not found"}),
+            400,
+        )
+
+
 @bp.route("/api/v1/users/history/<user_mal_id>", methods=["GET"])
 @cross_origin()
 def get_user_history(user_mal_id):
@@ -192,14 +225,27 @@ def get_user_history(user_mal_id):
         users_history = UsersHistory.query.filter_by(user_id=user.id).first()
 
         if users_history:
-            anime_ids = users_history.last_searched
-            res = image_from_id(anime_ids)
+            anime_names = users_history.anime_names
+            anime_image_urls = users_history.anime_image_urls
+            res = []
+
+            for i in range(len(anime_names)):
+                res.append(
+                    {
+                        "title": anime_names[i],
+                        "image_url": anime_image_urls[i],
+                    }
+                )
             return res, 200
         else:
             return jsonify({"error": "User does not have search history"}), 400
 
     else:
-        return jsonify({"error": "Failed to register user history: User not found"}), 400
+        return (
+            jsonify({"error": "Failed to register user history: User not found"}),
+            400,
+        )
+
 
 def image_from_id(anime_ids):
     mal_api_handler = current_app.config["MAL_API_HANDLER"]
@@ -213,7 +259,7 @@ def image_from_id(anime_ids):
         ]
         return res
     except KeyError:
-        return json.loads('{"message": "Anime not found!"}')
+        return jsonify({"message": "Anime not found!"})
 
 
 # v1 api routes
