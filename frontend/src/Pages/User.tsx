@@ -25,14 +25,11 @@ const User: React.FC = () => {
                 setAnimes(res)
             })
         } else console.log('no userId')
-
     }, [navigate])
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-            <h1 className="text-3xl mb-4">
-                Welcome back {username}
-            </h1>
+            <h1 className="text-3xl mb-4">Welcome back {username}</h1>
             <p>Your last seach</p>
             <ResultContainer animes={animes} />
         </div>

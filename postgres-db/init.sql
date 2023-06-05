@@ -86,9 +86,11 @@ ALTER TABLE public.users OWNER TO admin;
 --
 
 CREATE TABLE public.users_history (
-    id uuid NOT NULL,
     user_id uuid,
-    last_searched integer[]
+    id uuid NOT NULL,
+    anime_names text[],
+    anime_image_urls text[],
+    anime_ids integer[]
 );
 
 
@@ -20106,7 +20108,7 @@ COPY public.users (id, name, mal_id) FROM stdin;
 -- Data for Name: users_history; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
-COPY public.users_history (user_id, last_searched, id) FROM stdin;
+COPY public.users_history (user_id, id, anime_names, anime_image_urls, anime_ids) FROM stdin;
 \.
 
 
