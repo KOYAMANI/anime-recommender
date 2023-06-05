@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.8 (Homebrew)
--- Dumped by pg_dump version 14.8 (Homebrew)
+-- Dumped from database version 14.7 (Homebrew)
+-- Dumped by pg_dump version 14.7 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -25,16 +25,16 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.anime_data (
-    mal_id integer,
-    name text,
-    score double precision,
-    genres text,
-    episodes integer,
-    premiered text,
-    studios text,
-    members integer,
-    completed integer,
-    dropped_rate double precision
+    "MAL_ID" integer,
+    "Name" text,
+    "Score" double precision,
+    "Genres" text,
+    "Episodes" integer,
+    "Premiered" text,
+    "Studios" text,
+    "Members" integer,
+    "Completed" integer,
+    "Dropped rate" double precision
 );
 
 
@@ -45,45 +45,64 @@ ALTER TABLE public.anime_data OWNER TO admin;
 --
 
 CREATE TABLE public.anime_names (
-    mal_id integer,
-    name text,
-    english_name text,
-    japanese_name text
+    "MAL_ID" integer,
+    "Name" text,
+    "English name" text,
+    "Japanese name" text
 );
 
 
 ALTER TABLE public.anime_names OWNER TO admin;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: admin
+-- Name: user_account; Type: TABLE; Schema: public; Owner: admin
 --
 
-CREATE TABLE public.users (
-    id uuid NOT NULL,
-    name character varying(255),
-    mal_id integer
+CREATE TABLE public.user_account (
+    id integer NOT NULL,
+    name text NOT NULL,
+    email text NOT NULL,
+    password text NOT NULL,
+    CONSTRAINT email_check CHECK ((email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'::text))
 );
 
 
-ALTER TABLE public.users OWNER TO admin;
+ALTER TABLE public.user_account OWNER TO admin;
 
 --
--- Name: users_history; Type: TABLE; Schema: public; Owner: admin
+-- Name: user_account_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
 --
 
-CREATE TABLE public.users_history (
-    user_id uuid,
-    last_searched integer[]
-);
+CREATE SEQUENCE public.user_account_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
-ALTER TABLE public.users_history OWNER TO admin;
+ALTER TABLE public.user_account_id_seq OWNER TO admin;
+
+--
+-- Name: user_account_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.user_account_id_seq OWNED BY public.user_account.id;
+
+
+--
+-- Name: user_account id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.user_account ALTER COLUMN id SET DEFAULT nextval('public.user_account_id_seq'::regclass);
+
 
 --
 -- Data for Name: anime_data; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
-COPY public.anime_data (mal_id, name, score, genres, episodes, premiered, studios, members, completed, dropped_rate) FROM stdin;
+COPY public.anime_data ("MAL_ID", "Name", "Score", "Genres", "Episodes", "Premiered", "Studios", "Members", "Completed", "Dropped rate") FROM stdin;
 1	Cowboy Bebop	8.78	Action Adventure Comedy Drama Sci-Fi Space	26	Spring 1998	Sunrise	1251960	718161	0.03
 6	Trigun	8.24	Action Sci-Fi Adventure Comedy Drama Shounen	26	Spring 1998	Madhouse	558913	343492	0.03
 7	Witch Hunter Robin	7.27	Action Mystery Police Supernatural Drama Magic	26	Summer 2002	Sunrise	94683	46165	0.09
@@ -10083,7 +10102,7 @@ COPY public.anime_data (mal_id, name, score, genres, episodes, premiered, studio
 -- Data for Name: anime_names; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
-COPY public.anime_names (mal_id, name, english_name, japanese_name) FROM stdin;
+COPY public.anime_names ("MAL_ID", "Name", "English name", "Japanese name") FROM stdin;
 1	Cowboy Bebop	Cowboy Bebop	カウボーイビバップ
 6	Trigun	Trigun	トライガン
 7	Witch Hunter Robin	Witch Hunter Robin	Witch Hunter ROBIN (ウイッチハンターロビン)
@@ -20080,35 +20099,34 @@ COPY public.anime_names (mal_id, name, english_name, japanese_name) FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: admin
+-- Data for Name: user_account; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
-COPY public.users (id, name, mal_id) FROM stdin;
+COPY public.user_account (id, name, email, password) FROM stdin;
 \.
 
 
 --
--- Data for Name: users_history; Type: TABLE DATA; Schema: public; Owner: admin
+-- Name: user_account_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-COPY public.users_history (user_id, last_searched) FROM stdin;
-\.
-
-
---
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+SELECT pg_catalog.setval('public.user_account_id_seq', 1, false);
 
 
 --
--- Name: users_history users_history_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: admin
+-- Name: user_account user_account_email_key; Type: CONSTRAINT; Schema: public; Owner: admin
 --
 
-ALTER TABLE ONLY public.users_history
-    ADD CONSTRAINT users_history_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+ALTER TABLE ONLY public.user_account
+    ADD CONSTRAINT user_account_email_key UNIQUE (email);
+
+
+--
+-- Name: user_account user_account_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.user_account
+    ADD CONSTRAINT user_account_pkey PRIMARY KEY (id);
 
 
 --

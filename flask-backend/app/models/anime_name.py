@@ -5,22 +5,21 @@ from app import db
 
 class AnimeName(db.Model):
     __tablename__ = "anime_names"
-    # TODO: rename db column name to snake case instead of camel case with space
-    MAL_ID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(255), nullable=False)
-    Japanese_name = db.Column("Japanese name", db.String(255), nullable=True)
-    English_name = db.Column("English name", db.String(255), nullable=True)
+    mal_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    japanese_name = db.Column(db.String(255), nullable=True)
+    english_name = db.Column(db.String(255), nullable=True)
 
     def to_dict(self):
         return {
-            "MAL_ID": self.MAL_ID,
-            "Name": self.Name,
-            "Japanese_name": self.Japanese_name,
-            "English_name": self.English_name,
+            "mal_id": self.mal_id,
+            "name": self.name,
+            "japanese_name": self.japanese_name,
+            "english_name": self.english_name,
         }
 
     def __repr__(self):
-        return f"<AnimeName MAL_ID={self.MAL_ID}, \
-            Name={self.Name}, \
-            Japanese_name={self.Japanese_name}, \
-            English_name={self.English_name}>"
+        return f"<AnimeName mal_id={self.mal_id}, \
+            name={self.name}, \
+            japanese_name={self.japanese_name}, \
+            english_name={self.english_name}>"
