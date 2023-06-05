@@ -32,7 +32,7 @@ class AnimeDataHandler:
     def get_anime_id(self, title):
         ANIME_DATASET = self.load_anime_data()
         try:
-            anime_id = ANIME_DATASET[ANIME_DATASET["Name"] == title]["MAL_ID"].values[0]
+            anime_id = ANIME_DATASET[ANIME_DATASET["name"] == title]["mal_id"].values[0]
             return anime_id
         except IndexError:
             return -1
@@ -41,10 +41,10 @@ class AnimeDataHandler:
         ANIME_DATASET = self.load_anime_data()
         query_regex = r"\b" + re.escape(query)
         matching_titles = ANIME_DATASET[
-            ANIME_DATASET["Name"].apply(
+            ANIME_DATASET["name"].apply(
                 lambda title: re.search(query_regex, title, re.IGNORECASE) is not None
             )
-        ]["Name"]
+        ]["name"]
         res = matching_titles.head(limit).tolist()
 
         return '{"status":"SUCCESS", "data":' + json.dumps(res) + "}"

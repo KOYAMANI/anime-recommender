@@ -31,7 +31,7 @@ class AnimeData(db.Model):
         }
 
     def __repr__(self):
-        return f"<AnimeData MAL_ID={self.MAL_ID}, \
+        return f"<AnimeData mal_id={self.mal_id}, \
             name={self.name}, \
             score={self.score}, \
             genres={self.genres}, \
