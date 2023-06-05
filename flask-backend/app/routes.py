@@ -16,7 +16,7 @@ from .api_handler import JikanAPIHandler
 from .anime_data_handler import AnimeDataHandler
 from .cb_recommender import CBRecommender
 from .cf_recommender import CFRecommender
-from .models.user import User
+from .models.user import Users
 
 load_dotenv()
 
@@ -92,9 +92,9 @@ def mal_callback():
     user_mal_id = user_info["id"]
 
     # Register user in the app database if not exists
-    user = User.query.filter_by(mal_id=user_mal_id).first()
+    user = Users.query.filter_by(mal_id=user_mal_id).first()
     if not user:
-        new_user = User(
+        new_user = Users(
             name=user_name,
             mal_id=user_mal_id,
         )
