@@ -4,9 +4,11 @@ import Alert from '../Components/common/Alert'
 import { loginSuccess } from '../redux/slices/authSlice'
 
 import APIService from '../Components/APIService'
+import LoadingSpinner from '../Components/common/LoadingSpinner'
 
 const MyAnimeListLogin: React.FC = () => {
     const [error, setError] = useState('')
+    const [isPageLoading, setIsPageLoading] = useState(true)
 
     const navigate = useNavigate()
 
@@ -21,6 +23,7 @@ const MyAnimeListLogin: React.FC = () => {
             if (error) {
                 setError(error)
             }
+            setIsPageLoading(false)
             console.log('not authenticated')
         }
     }, [navigate, location])
@@ -28,6 +31,14 @@ const MyAnimeListLogin: React.FC = () => {
     const handleLogin = async () => {
         const oauthUrl = await apiService.getOAuthUrl()
         window.location.href = oauthUrl
+    }
+
+    if (isPageLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <LoadingSpinner />
+            </div>
+        );
     }
 
     return (
