@@ -118,7 +118,7 @@ def get_image():
                 res = mal_api_handler.get_anime_image(title)
                 return res, 200
             except KeyError:
-                return json.loads('{"message": "Anime not found!"}'), 400
+                return json.loads('{"error": "Anime not found!"}'), 400
         else:
             return "Method not supported!", 400
     else:
@@ -167,8 +167,8 @@ def rec_with_image(user_mal_id):
         if user_mal_id is not None and user_mal_id != "undefined":
             post_user_history(user_mal_id, anime_ids, anime_names, image_urls)
         return res, 200
-    except KeyError:
-        return jsonify({"message": "Anime not found!"}), 400
+    except (KeyError, ValueError) as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @bp.route("/api/v1/search-suggestion", methods=["POST"])
@@ -184,8 +184,8 @@ def get_suggestions():
         anime_data_handler = AnimeDataHandler.get_instance()
         res = json.loads(anime_data_handler.search_anime_titles(title))
         return res, 200
-    except KeyError:
-        return jsonify({"message": "Anime not found!"}), 400
+    except (KeyError, ValueError) as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @bp.route("/api/v1/users/history", methods=["POST"])
@@ -259,7 +259,7 @@ def image_from_id(anime_ids):
         ]
         return res
     except KeyError:
-        return jsonify({"message": "Anime not found!"})
+        return jsonify({"error": "Anime not found!"})
 
 
 # v1 api routes
@@ -285,7 +285,7 @@ def image_from_id(anime_ids):
 # print('{0}: {1}'.format(title, image_url))
 # return res
 #             except KeyError:
-#                 return json.loads('{"message": "Anime not found!"}')
+#                 return json.loads('{"error": "Anime not found!"}')
 #         else:
 #             return 'Method not supported!'
 #     else:
@@ -304,7 +304,7 @@ def image_from_id(anime_ids):
 #         res = jikan_handler.get_anime_info(title)
 #         return res, 200
 #     except KeyError:
-#         return json.loads('{"message": "Anime not found!"}'), 400
+#         return json.loads('{"error": "Anime not found!"}'), 400
 
 
 # @bp.route("/api/v2/anime/name", methods=["GET"])
@@ -325,4 +325,4 @@ def image_from_id(anime_ids):
 #         res = jikan_handler.get_anime_picture(id)
 #         return res, 200
 #     except KeyError:
-#         return json.loads('{"message": "Anime not found!"}'), 400
+#         return json.loads('{"error": "Anime not found!"}'), 400

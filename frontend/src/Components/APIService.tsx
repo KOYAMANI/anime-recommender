@@ -26,7 +26,7 @@ export default class APIService {
                 }),
             }
         )
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+        if (!res.ok) throw res;
         return res.json()
     }
 
