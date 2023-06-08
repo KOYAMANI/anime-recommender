@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useNavigate, useLocation } from 'react-router-dom'
+import Alert from '../Components/common/Alert'
 import { loginSuccess } from '../redux/slices/authSlice'
 
 import APIService from '../Components/APIService'
 
 const MyAnimeListLogin: React.FC = () => {
     const [error, setError] = useState('')
-    const [codeVerifier, setCodeVerifier] = useState('')
 
     const navigate = useNavigate()
-    const dispatch = useDispatch()
 
     const apiService = new APIService()
 
     useEffect(() => {
         const token = localStorage.getItem('token')
         if (token) navigate('/user')
-        else console.log('not authenticated')
-    }, [navigate])
+        else {
+            const urlParams = new URLSearchParams(location.search)
+            const error = urlParams.get('error')
+            if (error) {
+                setError(error)
+            }
+            console.log('not authenticated')
+        }
+    }, [navigate, location])
 
     const handleLogin = async () => {
         const oauthUrl = await apiService.getOAuthUrl()
@@ -42,7 +47,9 @@ const MyAnimeListLogin: React.FC = () => {
                     Login with MyAnimeList
                 </button>
             </form>
-            <div>{error ? <p className="text-red-500">{error}</p> : null}</div>
+            <div className="w-full h-12 flex items-center justify-center mt-4">
+                {error && <Alert type="error" message={error} />}
+            </div>
         </div>
     )
 }

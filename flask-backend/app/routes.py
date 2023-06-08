@@ -65,44 +65,44 @@ def mal_callback():
 
     error = request.args.get("error")
     if error:
-        print("An error occurred during authorization: ", error)
-        return jsonify({"error": error}), 400
+        print('An error occurred during authorization')
+        return mal_api_handler.user_oauth_redirect(err='An error occurred during authorization')
 
     # Get code and state from request and compare them with the one in cache
     code = request.args.get("code")
     code_verifier = json.loads(redis_client.get("code_verifier"))
 
-    state = request.args.get("state")
+    state = request.args.get("state") 
     original_state = json.loads(redis_client.get("state"))
     if state != original_state:
-        return jsonify({"error": "Invalid state parameter"}), 400
+        print('Invalid state parameter')
+        return mal_api_handler.user_oauth_redirect(err='Invalid state parameter')
 
     # Retrieve access token and user info
     access_token, error = mal_api_handler.get_access_token(code, code_verifier)
     if not access_token:
-        return (
-            jsonify({"error": "Failed to retrieve access token", "details": error}),
-            400,
-        )
+        print('Failed to retrieve access token')
+        return mal_api_handler.user_oauth_redirect(err='Failed to retrieve access token')
 
     user_info, error = mal_api_handler.get_user_info(access_token)
     if not user_info:
-        return jsonify({"error": "Failed to retrieve user info", "details": error}), 400
+        print('Failed to retrieve user info')
+        return mal_api_handler.user_oauth_redirect(err='Failed to retrieve user info')
 
-    user_name = user_info["name"]
+    user_mal_name = user_info["name"]
     user_mal_id = user_info["id"]
 
     # Register user in the app database if not exists
     user = Users.query.filter_by(mal_id=user_mal_id).first()
     if not user:
         new_user = Users(
-            name=user_name,
+            name=user_mal_name,
             mal_id=user_mal_id,
         )
         db.session.add(new_user)
         db.session.commit()
 
-    return mal_api_handler.user_oauth_redirect(access_token, user_name, user_mal_id)
+    return mal_api_handler.user_oauth_redirect(token=access_token, user_name=user_mal_name, user_id=user_mal_id)
 
 
 @bp.route("/api/v1/anime/image", methods=["POST"])

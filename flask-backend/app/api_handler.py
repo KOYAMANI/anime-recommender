@@ -112,13 +112,19 @@ class MalAPIHandler:
             return None, response.json()
 
         return response.json(), None
-
-    def user_oauth_redirect(self, token, user_name, user_id):
+    
+    def user_oauth_redirect(self, token=None, user_name=None, user_id=None, err=None):
         if not self.REACT_APP_URL:
             return {"error": "Invalid URL"}
-        return redirect(
-            f"{self.REACT_APP_URL}callback?token={token}&userName={user_name}&userId={user_id}"
-        )
+
+        if err:
+            return redirect(f"{self.REACT_APP_URL}callback?error=Auth failed: {err}")
+
+        if token and user_name and user_id:
+            return redirect(
+                f"{self.REACT_APP_URL}callback?token={token}&userName={user_name}&userId={user_id}"
+            )
+        return redirect(f"{self.REACT_APP_URL}callback?error=missing required parameters")
 
     def get_anime_title(self, anime_id):
         if not self.MAL_API_URL or not self.X_MAL_CLIENT_ID:

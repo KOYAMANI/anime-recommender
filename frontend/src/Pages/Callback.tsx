@@ -14,6 +14,7 @@ const Callback: React.FC = () => {
         const token = urlParams.get('token')
         const userName = urlParams.get('userName')
         const userId = urlParams.get('userId')
+        const error = urlParams.get('error')
 
         if (token) {
             localStorage.setItem('token', token)
@@ -25,6 +26,8 @@ const Callback: React.FC = () => {
                 })
             )
             navigate('/user')
+        }  else if (error) {
+            navigate(`/login?error=${error}`)
         } else {
             navigate('/login')
         }
