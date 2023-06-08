@@ -65,29 +65,33 @@ def mal_callback():
 
     error = request.args.get("error")
     if error:
-        print('An error occurred during authorization')
-        return mal_api_handler.user_oauth_redirect(err='An error occurred during authorization')
+        print("An error occurred during authorization")
+        return mal_api_handler.user_oauth_redirect(
+            err="An error occurred during authorization"
+        )
 
     # Get code and state from request and compare them with the one in cache
     code = request.args.get("code")
     code_verifier = json.loads(redis_client.get("code_verifier"))
 
-    state = request.args.get("state") 
+    state = request.args.get("state")
     original_state = json.loads(redis_client.get("state"))
     if state != original_state:
-        print('Invalid state parameter')
-        return mal_api_handler.user_oauth_redirect(err='Invalid state parameter')
+        print("Invalid state parameter")
+        return mal_api_handler.user_oauth_redirect(err="Invalid state parameter")
 
     # Retrieve access token and user info
     access_token, error = mal_api_handler.get_access_token(code, code_verifier)
     if not access_token:
-        print('Failed to retrieve access token')
-        return mal_api_handler.user_oauth_redirect(err='Failed to retrieve access token')
+        print("Failed to retrieve access token")
+        return mal_api_handler.user_oauth_redirect(
+            err="Failed to retrieve access token"
+        )
 
     user_info, error = mal_api_handler.get_user_info(access_token)
     if not user_info:
-        print('Failed to retrieve user info')
-        return mal_api_handler.user_oauth_redirect(err='Failed to retrieve user info')
+        print("Failed to retrieve user info")
+        return mal_api_handler.user_oauth_redirect(err="Failed to retrieve user info")
 
     user_mal_name = user_info["name"]
     user_mal_id = user_info["id"]
@@ -102,7 +106,9 @@ def mal_callback():
         db.session.add(new_user)
         db.session.commit()
 
-    return mal_api_handler.user_oauth_redirect(token=access_token, user_name=user_mal_name, user_id=user_mal_id)
+    return mal_api_handler.user_oauth_redirect(
+        token=access_token, user_name=user_mal_name, user_id=user_mal_id
+    )
 
 
 @bp.route("/api/v1/anime/image", methods=["POST"])
@@ -149,6 +155,7 @@ def rec_with_image(user_mal_id):
             image_url = mal_api_handler.get_anime_image(id)
             res.append(
                 {
+                    "id": id,
                     "title": title,
                     "image_url": image_url,
                 }
@@ -225,6 +232,7 @@ def get_user_history(user_mal_id):
         users_history = UsersHistory.query.filter_by(user_id=user.id).first()
 
         if users_history:
+            anime_ids = users_history.anime_ids
             anime_names = users_history.anime_names
             anime_image_urls = users_history.anime_image_urls
             res = []
@@ -232,6 +240,7 @@ def get_user_history(user_mal_id):
             for i in range(len(anime_names)):
                 res.append(
                     {
+                        "id": anime_ids[i],
                         "title": anime_names[i],
                         "image_url": anime_image_urls[i],
                     }

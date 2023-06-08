@@ -28,7 +28,9 @@ class CBRecommender:
 
     def get_rec(self, anime_title, k=10):
         try:
-            index = self.ANIME_DATASET[self.ANIME_DATASET["name"] == anime_title].index[0]
+            index = self.ANIME_DATASET[self.ANIME_DATASET["name"] == anime_title].index[
+                0
+            ]
             scores = self.SIMILARITY[index]
 
             top_k_plus_one_indices = np.argpartition(scores, -(k + 1))[-(k + 1) :]

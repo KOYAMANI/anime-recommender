@@ -15,50 +15,50 @@ const User: React.FC = () => {
     const apiService = new APIService()
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token')
         if (!token) {
-            navigate('/login');
+            navigate('/login')
         } else {
-            const userName = localStorage.getItem('userName');
+            const userName = localStorage.getItem('userName')
             if (userName) {
-                setUsername(userName);
+                setUsername(userName)
             } else {
-                console.log('no username');
+                console.log('no username')
             }
-    
-            const userId = localStorage.getItem('userId');
+
+            const userId = localStorage.getItem('userId')
             if (userId) {
-                setUserId(userId);
+                setUserId(userId)
                 apiService
                     .getUserHistory(userId)
                     .then((res) => {
-                        setAnimes(res);
+                        setAnimes(res)
                     })
                     .catch((errResponse) => {
                         errResponse
                             .json()
                             .then((body: { error: string }) => {
-                                setError(body.error);
+                                setError(body.error)
                             })
                             .catch(() => {
-                                setError('An unexpected error occurred');
-                            });
-                    });
+                                setError('An unexpected error occurred')
+                            })
+                    })
             } else {
-                console.log('no userId');
+                console.log('no userId')
             }
         }
-        setIsPageLoading(false);
-    }, [navigate]);
+        setIsPageLoading(false)
+    }, [navigate])
 
     if (isPageLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <LoadingSpinner />
             </div>
-        );
+        )
     }
-    
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <h1 className="text-3xl mb-4">Welcome back {username}</h1>
@@ -69,7 +69,6 @@ const User: React.FC = () => {
             </div>
         </div>
     )
-
 }
 
 export default User

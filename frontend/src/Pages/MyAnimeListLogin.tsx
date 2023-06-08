@@ -38,7 +38,7 @@ const MyAnimeListLogin: React.FC = () => {
             <div className="flex items-center justify-center min-h-screen">
                 <LoadingSpinner />
             </div>
-        );
+        )
     }
 
     return (

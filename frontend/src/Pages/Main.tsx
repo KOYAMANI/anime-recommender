@@ -10,7 +10,6 @@ import { finishLoading, startLoading } from '../redux/slices/loadingSlice'
 import LoadingSpinner from '../Components/common/LoadingSpinner'
 import { Link } from 'react-router-dom'
 
-
 const Main: React.FC = () => {
     const [title, setTitle] = useState('')
     const [error, setError] = useState('')
@@ -54,12 +53,15 @@ const Main: React.FC = () => {
                     dispatch(finishLoading('FETCH_SUGGESTIONS'))
                 })
                 .catch((errResponse) => {
-                    errResponse.json().then((body: { error: string }) => {
-                        setError(body.error);
-                    }).catch(() => {
-                        setError("An unexpected error occurred");
-                    });
-                    dispatch(finishLoading('FETCH_RECOMMENDATIONS'));
+                    errResponse
+                        .json()
+                        .then((body: { error: string }) => {
+                            setError(body.error)
+                        })
+                        .catch(() => {
+                            setError('An unexpected error occurred')
+                        })
+                    dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
                 })
         } else {
             setSearchResults([])
@@ -91,12 +93,15 @@ const Main: React.FC = () => {
                 })
                 .catch((errResponse) => {
                     console.log(errResponse)
-                    errResponse.json().then((body: { error: string }) => {
-                        setError(body.error);
-                    }).catch(() => {
-                        setError("An unexpected error occurred");
-                    });
-                    dispatch(finishLoading('FETCH_RECOMMENDATIONS'));
+                    errResponse
+                        .json()
+                        .then((body: { error: string }) => {
+                            setError(body.error)
+                        })
+                        .catch(() => {
+                            setError('An unexpected error occurred')
+                        })
+                    dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
                 })
         }
     }

@@ -43,7 +43,8 @@ class AnimeDataHandler:
             query_regex = r"\b" + re.escape(query)
             matching_titles = ANIME_DATASET[
                 ANIME_DATASET["name"].apply(
-                    lambda title: re.search(query_regex, title, re.IGNORECASE) is not None
+                    lambda title: re.search(query_regex, title, re.IGNORECASE)
+                    is not None
                 )
             ]["name"]
             res = matching_titles.head(limit).tolist()

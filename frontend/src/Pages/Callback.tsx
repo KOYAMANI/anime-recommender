@@ -26,7 +26,7 @@ const Callback: React.FC = () => {
                 })
             )
             navigate('/user')
-        }  else if (error) {
+        } else if (error) {
             navigate(`/login?error=${error}`)
         } else {
             navigate('/login')
