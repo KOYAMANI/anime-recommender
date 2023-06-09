@@ -47,7 +47,7 @@ class MalAPIHandler:
 
     def get_connection(self):
         if not self.MAL_API_URL or not self.X_MAL_CLIENT_ID:
-            return {"message": "Invalid URL or client ID"}
+            return {"error": "Invalid URL or client ID"}
         url = self.MAL_API_URL + "anime/"
         headers = (
             {"X-MAL-CLIENT-ID": self.X_MAL_CLIENT_ID} if self.X_MAL_CLIENT_ID else None
@@ -60,13 +60,13 @@ class MalAPIHandler:
                 else:
                     return False
             except:
-                return json.loads('{"message": "Error calling MAL API!"}')
+                return jsonify({"error": "Error calling MAL API!"})
         else:
-            return json.loads('{"message": "Error Invalid URL or Headers!"}')
+            return jsonify({"message": "Error Invalid URL or Headers!"})
 
     def user_oauth_authorize(self, state, code_verifier):
         if not self.MAL_OAUTH_URL:
-            return {"message": "Invalid URL"}
+            return {"error": "Invalid URL"}
         params = {
             "response_type": "code",
             "client_id": self.X_MAL_CLIENT_ID,
@@ -80,7 +80,7 @@ class MalAPIHandler:
 
     def get_access_token(self, code, code_verifier):
         if not self.MAL_OAUTH_URL:
-            return {"message": "Invalid URL"}
+            return {"error": "Invalid URL"}
         data = {
             "client_id": self.X_MAL_CLIENT_ID,
             "client_secret": self.X_MAL_CLIENT_SECRET,
@@ -102,7 +102,7 @@ class MalAPIHandler:
 
     def get_user_info(self, token):
         if not self.MAL_API_URL:
-            return {"message": "Invalid URL"}
+            return {"error": "Invalid URL"}
 
         url = self.MAL_API_URL + "users/@me"
         headers = {"Authorization": f"Bearer {token}"}
@@ -113,16 +113,24 @@ class MalAPIHandler:
 
         return response.json(), None
 
-    def user_oauth_redirect(self, token, user_name, user_id):
+    def user_oauth_redirect(self, token=None, user_name=None, user_id=None, err=None):
         if not self.REACT_APP_URL:
-            return {"message": "Invalid URL"}
+            return {"error": "Invalid URL"}
+
+        if err:
+            return redirect(f"{self.REACT_APP_URL}callback?error=Auth failed: {err}")
+
+        if token and user_name and user_id:
+            return redirect(
+                f"{self.REACT_APP_URL}callback?token={token}&userName={user_name}&userId={user_id}"
+            )
         return redirect(
-            f"{self.REACT_APP_URL}callback?token={token}&userName={user_name}&userId={user_id}"
+            f"{self.REACT_APP_URL}callback?error=missing required parameters"
         )
 
     def get_anime_title(self, anime_id):
         if not self.MAL_API_URL or not self.X_MAL_CLIENT_ID:
-            return {"message": "Invalid URL or client ID"}
+            return {"error": "Invalid URL or client ID"}
         url = self.MAL_API_URL + "anime/" + str(anime_id)
         headers = {"X-MAL-CLIENT-ID": self.X_MAL_CLIENT_ID}
         if url and headers:
@@ -131,13 +139,13 @@ class MalAPIHandler:
                 res_json = json.loads(res)
                 return res_json["title"]
             except:
-                return json.loads('{"message": "Error calling MAL API!"}')
+                raise ValueError("Error calling MAL API!")
         else:
-            return json.loads('{"message": "Error Invalid URL or Headers!"}')
+            raise ValueError("Error Invalid URL or Headers!")
 
     def get_anime_image(self, anime_id, image_size="large"):
         if not self.MAL_API_URL or not self.X_MAL_CLIENT_ID:
-            return {"message": "Invalid URL or client ID"}
+            return {"error": "Invalid URL or client ID"}
         url = self.MAL_API_URL + "anime/" + str(anime_id)
         headers = (
             {"X-MAL-CLIENT-ID": self.X_MAL_CLIENT_ID} if self.X_MAL_CLIENT_ID else None
@@ -148,9 +156,9 @@ class MalAPIHandler:
                 res_json = json.loads(res)
                 return res_json["main_picture"][image_size]
             except:
-                return json.loads('{"message": "Error calling MAL API!"}')
+                raise ValueError("Error calling MAL API!")
         else:
-            return json.loads('{"message": "Error Invalid URL or Headers!"}')
+            raise ValueError("Error Invalid URL or Headers!")
 
 
 class JikanAPIHandler:

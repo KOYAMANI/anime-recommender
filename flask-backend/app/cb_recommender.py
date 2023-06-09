@@ -27,15 +27,20 @@ class CBRecommender:
         return genre_similarity
 
     def get_rec(self, anime_title, k=10):
-        index = self.ANIME_DATASET[self.ANIME_DATASET["name"] == anime_title].index[0]
-        scores = self.SIMILARITY[index]
+        try:
+            index = self.ANIME_DATASET[self.ANIME_DATASET["name"] == anime_title].index[
+                0
+            ]
+            scores = self.SIMILARITY[index]
 
-        top_k_plus_one_indices = np.argpartition(scores, -(k + 1))[-(k + 1) :]
-        top_k_plus_one_indices_sorted = top_k_plus_one_indices[
-            np.argsort(scores[top_k_plus_one_indices])
-        ][::-1]
-        top_k_indices_sorted = top_k_plus_one_indices_sorted[1:]
+            top_k_plus_one_indices = np.argpartition(scores, -(k + 1))[-(k + 1) :]
+            top_k_plus_one_indices_sorted = top_k_plus_one_indices[
+                np.argsort(scores[top_k_plus_one_indices])
+            ][::-1]
+            top_k_indices_sorted = top_k_plus_one_indices_sorted[1:]
 
-        ids = self.ANIME_DATASET["mal_id"].iloc[top_k_indices_sorted].tolist()
+            ids = self.ANIME_DATASET["mal_id"].iloc[top_k_indices_sorted].tolist()
 
-        return '{"status":"SUCCESS", "id":' + json.dumps(ids) + "}"
+            return '{"status":"SUCCESS", "id":' + json.dumps(ids) + "}"
+        except IndexError:
+            raise ValueError("Anime not found!")

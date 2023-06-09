@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import SearchContainer from '../Components/pageSpecific/main/SearchContainer'
 import ResultContainer from '../Components/pageSpecific/main/ResultContainer'
 import APIService from '../Components/APIService'
+import Alert from '../Components/common/Alert'
 import logo from '../assets/icons/girl.png'
 import { useDispatch, useSelector } from 'react-redux'
 import RootState from '../redux/rootState'
@@ -51,10 +52,16 @@ const Main: React.FC = () => {
                     setShowSuggestions(true)
                     dispatch(finishLoading('FETCH_SUGGESTIONS'))
                 })
-                .catch((err) => {
-                    console.error(err)
-                    setError(err.message || 'An unexpected error occurred')
-                    dispatch(finishLoading('FETCH_SUGGESTIONS'))
+                .catch((errResponse) => {
+                    errResponse
+                        .json()
+                        .then((body: { error: string }) => {
+                            setError(body.error)
+                        })
+                        .catch(() => {
+                            setError('An unexpected error occurred')
+                        })
+                    dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
                 })
         } else {
             setSearchResults([])
@@ -84,8 +91,16 @@ const Main: React.FC = () => {
                     setTitle('')
                     dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
                 })
-                .catch((err) => {
-                    setError(err.message)
+                .catch((errResponse) => {
+                    console.log(errResponse)
+                    errResponse
+                        .json()
+                        .then((body: { error: string }) => {
+                            setError(body.error)
+                        })
+                        .catch(() => {
+                            setError('An unexpected error occurred')
+                        })
                     dispatch(finishLoading('FETCH_RECOMMENDATIONS'))
                 })
         }
@@ -103,11 +118,15 @@ const Main: React.FC = () => {
                 handleSubmit={submitForm}
             />
             {isRecLoading ? (
-                <LoadingSpinner />
+                <div className="w-3/4 h-72 flex items-center justify-center mt-4">
+                    <LoadingSpinner />
+                </div>
             ) : (
                 <ResultContainer animes={animes} />
             )}
-            <div>{error ? <p>{error}</p> : null}</div>
+            <div className="w-full h-12 flex items-center justify-center mt-4">
+                {error && <Alert type="error" message={error} />}
+            </div>
         </header>
     )
 }

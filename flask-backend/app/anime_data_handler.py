@@ -39,12 +39,16 @@ class AnimeDataHandler:
 
     def search_anime_titles(self, query, limit=10):
         ANIME_DATASET = self.load_anime_data()
-        query_regex = r"\b" + re.escape(query)
-        matching_titles = ANIME_DATASET[
-            ANIME_DATASET["name"].apply(
-                lambda title: re.search(query_regex, title, re.IGNORECASE) is not None
-            )
-        ]["name"]
-        res = matching_titles.head(limit).tolist()
+        try:
+            query_regex = r"\b" + re.escape(query)
+            matching_titles = ANIME_DATASET[
+                ANIME_DATASET["name"].apply(
+                    lambda title: re.search(query_regex, title, re.IGNORECASE)
+                    is not None
+                )
+            ]["name"]
+            res = matching_titles.head(limit).tolist()
 
-        return '{"status":"SUCCESS", "data":' + json.dumps(res) + "}"
+            return '{"status":"SUCCESS", "data":' + json.dumps(res) + "}"
+        except IndexError:
+            raise ValueError("Anime not found!")

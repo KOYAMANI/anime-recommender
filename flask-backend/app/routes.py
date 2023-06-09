@@ -65,8 +65,10 @@ def mal_callback():
 
     error = request.args.get("error")
     if error:
-        print("An error occurred during authorization: ", error)
-        return jsonify({"error": error}), 400
+        print("An error occurred during authorization")
+        return mal_api_handler.user_oauth_redirect(
+            err="An error occurred during authorization"
+        )
 
     # Get code and state from request and compare them with the one in cache
     code = request.args.get("code")
@@ -75,34 +77,38 @@ def mal_callback():
     state = request.args.get("state")
     original_state = json.loads(redis_client.get("state"))
     if state != original_state:
-        return jsonify({"error": "Invalid state parameter"}), 400
+        print("Invalid state parameter")
+        return mal_api_handler.user_oauth_redirect(err="Invalid state parameter")
 
     # Retrieve access token and user info
     access_token, error = mal_api_handler.get_access_token(code, code_verifier)
     if not access_token:
-        return (
-            jsonify({"error": "Failed to retrieve access token", "details": error}),
-            400,
+        print("Failed to retrieve access token")
+        return mal_api_handler.user_oauth_redirect(
+            err="Failed to retrieve access token"
         )
 
     user_info, error = mal_api_handler.get_user_info(access_token)
     if not user_info:
-        return jsonify({"error": "Failed to retrieve user info", "details": error}), 400
+        print("Failed to retrieve user info")
+        return mal_api_handler.user_oauth_redirect(err="Failed to retrieve user info")
 
-    user_name = user_info["name"]
+    user_mal_name = user_info["name"]
     user_mal_id = user_info["id"]
 
     # Register user in the app database if not exists
     user = Users.query.filter_by(mal_id=user_mal_id).first()
     if not user:
         new_user = Users(
-            name=user_name,
+            name=user_mal_name,
             mal_id=user_mal_id,
         )
         db.session.add(new_user)
         db.session.commit()
 
-    return mal_api_handler.user_oauth_redirect(access_token, user_name, user_mal_id)
+    return mal_api_handler.user_oauth_redirect(
+        token=access_token, user_name=user_mal_name, user_id=user_mal_id
+    )
 
 
 @bp.route("/api/v1/anime/image", methods=["POST"])
@@ -118,7 +124,7 @@ def get_image():
                 res = mal_api_handler.get_anime_image(title)
                 return res, 200
             except KeyError:
-                return json.loads('{"message": "Anime not found!"}'), 400
+                return json.loads('{"error": "Anime not found!"}'), 400
         else:
             return "Method not supported!", 400
     else:
@@ -149,6 +155,7 @@ def rec_with_image(user_mal_id):
             image_url = mal_api_handler.get_anime_image(id)
             res.append(
                 {
+                    "id": id,
                     "title": title,
                     "image_url": image_url,
                 }
@@ -167,8 +174,8 @@ def rec_with_image(user_mal_id):
         if user_mal_id is not None and user_mal_id != "undefined":
             post_user_history(user_mal_id, anime_ids, anime_names, image_urls)
         return res, 200
-    except KeyError:
-        return jsonify({"message": "Anime not found!"}), 400
+    except (KeyError, ValueError) as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @bp.route("/api/v1/search-suggestion", methods=["POST"])
@@ -184,8 +191,8 @@ def get_suggestions():
         anime_data_handler = AnimeDataHandler.get_instance()
         res = json.loads(anime_data_handler.search_anime_titles(title))
         return res, 200
-    except KeyError:
-        return jsonify({"message": "Anime not found!"}), 400
+    except (KeyError, ValueError) as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @bp.route("/api/v1/users/history", methods=["POST"])
@@ -225,6 +232,7 @@ def get_user_history(user_mal_id):
         users_history = UsersHistory.query.filter_by(user_id=user.id).first()
 
         if users_history:
+            anime_ids = users_history.anime_ids
             anime_names = users_history.anime_names
             anime_image_urls = users_history.anime_image_urls
             res = []
@@ -232,6 +240,7 @@ def get_user_history(user_mal_id):
             for i in range(len(anime_names)):
                 res.append(
                     {
+                        "id": anime_ids[i],
                         "title": anime_names[i],
                         "image_url": anime_image_urls[i],
                     }
@@ -259,7 +268,7 @@ def image_from_id(anime_ids):
         ]
         return res
     except KeyError:
-        return jsonify({"message": "Anime not found!"})
+        return jsonify({"error": "Anime not found!"})
 
 
 # v1 api routes
@@ -285,7 +294,7 @@ def image_from_id(anime_ids):
 # print('{0}: {1}'.format(title, image_url))
 # return res
 #             except KeyError:
-#                 return json.loads('{"message": "Anime not found!"}')
+#                 return json.loads('{"error": "Anime not found!"}')
 #         else:
 #             return 'Method not supported!'
 #     else:
@@ -304,7 +313,7 @@ def image_from_id(anime_ids):
 #         res = jikan_handler.get_anime_info(title)
 #         return res, 200
 #     except KeyError:
-#         return json.loads('{"message": "Anime not found!"}'), 400
+#         return json.loads('{"error": "Anime not found!"}'), 400
 
 
 # @bp.route("/api/v2/anime/name", methods=["GET"])
@@ -325,4 +334,4 @@ def image_from_id(anime_ids):
 #         res = jikan_handler.get_anime_picture(id)
 #         return res, 200
 #     except KeyError:
-#         return json.loads('{"message": "Anime not found!"}'), 400
+#         return json.loads('{"error": "Anime not found!"}'), 400
