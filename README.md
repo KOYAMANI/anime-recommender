@@ -39,7 +39,7 @@ docker-compose -p anime-recommender-dev -f docker-compose.dev.yml up --build
 
 ## Architecture Overview
 
-![Architecture diagram](https://github.com/KOYAMANI/anime-recommender/tree/main/docs/images/architecture-diagram.jpg)
+![Architecture diagram](https://github.com/KOYAMANI/anime-recommender/tree/main/docs/images/architecture-diagram.png)
 
 ## Design decisions
 
