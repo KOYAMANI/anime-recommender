@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginSuccess } from '../redux/slices/authSlice'
 
-import APIService from '../Components/APIService'
+import APIService from '../Services/APIService'
 
 const Callback: React.FC = () => {
     const navigate = useNavigate()
