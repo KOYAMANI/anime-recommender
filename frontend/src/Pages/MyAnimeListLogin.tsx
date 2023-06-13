@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import Alert from '../Components/common/Alert'
+import Alert from '../Components/common/alert/Alert'
 import { loginSuccess } from '../redux/slices/authSlice'
 
-import APIService from '../Components/APIService'
-import LoadingSpinner from '../Components/common/LoadingSpinner'
+import APIService from '../Services/APIService'
+import LoadingSpinner from '../Components/common/loadingSpinner/LoadingSpinner'
 
 const MyAnimeListLogin: React.FC = () => {
     const [error, setError] = useState('')
@@ -58,6 +58,13 @@ const MyAnimeListLogin: React.FC = () => {
                     Login with MyAnimeList
                 </button>
             </form>
+            <p className="mt-4">
+                For us to provide better user experience, 
+            </p>
+            <p>
+                we recommend synchronizing your <a href="https://myanimelist.net" className="text-blue-500" target="_blank">MyAnimeList</a> account
+            </p>
+            
             <div className="w-full h-12 flex items-center justify-center mt-4">
                 {error && <Alert type="error" message={error} />}
             </div>

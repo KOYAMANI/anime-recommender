@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import APIService from '../Components/APIService'
-import ResultContainer from '../Components/pageSpecific/main/ResultContainer'
-import Alert from '../Components/common/Alert'
-import LoadingSpinner from '../Components/common/LoadingSpinner'
+import APIService from '../Services/APIService'
+import AnimeListContainer from '../Components/common/resultContainer/AnimeListContainer'
+import Alert from '../Components/common/alert/Alert'
+import LoadingSpinner from '../Components/common/loadingSpinner/LoadingSpinner'
 
 const User: React.FC = () => {
     const [username, setUsername] = useState('')
@@ -63,7 +63,7 @@ const User: React.FC = () => {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <h1 className="text-3xl mb-4">Welcome back {username}</h1>
             <p>Your last search</p>
-            {animes ? <ResultContainer animes={animes} /> : null}
+            {animes ? <AnimeListContainer animes={animes} /> : null}
             <div className="w-full h-12 flex items-center justify-center mt-4">
                 {error && <Alert type="error" message={error} />}
             </div>

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import SearchContainer from '../Components/pageSpecific/main/SearchContainer'
-import ResultContainer from '../Components/pageSpecific/main/ResultContainer'
-import APIService from '../Components/APIService'
-import Alert from '../Components/common/Alert'
+import SearchContainer from '../Components/pageSpecific/main/searchContainer/SearchContainer'
+import AnimeListContainer from '../Components/common/resultContainer/AnimeListContainer'
+import APIService from '../Services/APIService'
+import Alert from '../Components/common/alert/Alert'
 import logo from '../assets/icons/girl.png'
 import { useDispatch, useSelector } from 'react-redux'
 import RootState from '../redux/rootState'
 import { finishLoading, startLoading } from '../redux/slices/loadingSlice'
-import LoadingSpinner from '../Components/common/LoadingSpinner'
-import { Link } from 'react-router-dom'
+import LoadingSpinner from '../Components/common/loadingSpinner/LoadingSpinner'
 
 const Main: React.FC = () => {
     const [title, setTitle] = useState('')
@@ -122,7 +121,7 @@ const Main: React.FC = () => {
                     <LoadingSpinner />
                 </div>
             ) : (
-                <ResultContainer animes={animes} />
+                <AnimeListContainer animes={animes} />
             )}
             <div className="w-full h-12 flex items-center justify-center mt-4">
                 {error && <Alert type="error" message={error} />}
