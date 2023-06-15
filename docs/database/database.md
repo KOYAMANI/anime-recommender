@@ -26,6 +26,17 @@ This table stores information about different anime.
 | completed    | integer          | Number of people who completed watching all the episodes |
 | dropped_rate | double precision | Number of people who stopped watching before completion  |
 
+### anime_name
+
+This table stores information about anime name in different language.
+
+| Column  | Type            | Description                   |
+| ------- | --------------- | ----------------------------- |
+| id      | uuid (not null) | id                            |
+| name    | text            | anime name in myAnimeList.net |
+| name_jp | text            | anime name in Japanese        |
+| name_en | text            | anime name in English         |
+
 ### users
 
 This table stores information about the users.

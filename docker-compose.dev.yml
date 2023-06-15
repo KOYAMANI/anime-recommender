@@ -15,6 +15,19 @@ services:
     env_file:
       - ./frontend/.env.dev
 
+  frontend-test:
+    build:
+      context: ./frontend
+      args:
+        TARGET_STAGE: development
+        REACT_APP_API_URL: http://localhost:8080/
+    command: npm run test
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    env_file:
+      - ./frontend/.env.dev
+
   flask-backend:
     build: 
       context: ./flask-backend
@@ -26,6 +39,17 @@ services:
       - redis-db
     volumes:
       - ./flask-backend:/app
+  
+  flask-backend-test:
+    build: 
+      context: ./flask-backend
+      dockerfile: Dockerfile.dev
+    command: pytest tests
+    volumes:
+      - ./flask-backend:/app
+    depends_on:
+      - postgres-db
+      - redis-db
 
   postgres-db:
     image: postgres:13.4-alpine
