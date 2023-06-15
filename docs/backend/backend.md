@@ -49,3 +49,17 @@ Lastly, the user is redirected with their access token, MyAnimeList username, an
 ## Database connection
 
 Database connection is established by SQLAlchemy. It connects to local Postgres Docker image in local, and Amazon RDS Postgres DB in production respectively.
+
+## Testing
+
+The application uses Python's built-in `unittest` library for testing. The choice of `unittest` is attributed to its ability to create isolated test environments and its full integration with Python's standard library.
+
+Test cases are organized into individual classes extending `unittest.TestCase`.
+
+Tests focus on the following primary areas:
+
+1. db.Model: The application uses SQLAlchemy to interact with the database service. Tests ensure that the database connection is functional, and that all models can be accurately created, deleted, and retrieved.
+
+2. API Calls: The key functionality of providing recommendations to users is thoroughly tested to confirm accurate parameter returns. However, due to the interactive nature of OAuth authentication with MyAnimeList, full automation of tests is not feasible. Therefore, the tests at least verify that a redirection response (HTTP status code 302) is returned for OAuth related endpoints.
+
+As the db.Model test cases rely on database interactions, the `docker-compose.dev.yml` file includes a `flask-backend-test` service. This service is configured to automatically run the tests during each Docker build. It works in conjunction with the local `postgres-db` service to provide a realistic testing environment, thereby ensuring the accuracy and reliability of our tests.

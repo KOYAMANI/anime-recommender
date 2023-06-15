@@ -4,3 +4,4 @@
 /app/input
 .env
 migrations
+/.pytest_cache
