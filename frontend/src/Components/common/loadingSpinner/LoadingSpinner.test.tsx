@@ -1,11 +1,11 @@
-import { render, screen } from '@testing-library/react';
-import LoadingSpinner from './LoadingSpinner';
+import { render, screen } from '@testing-library/react'
+import LoadingSpinner from './LoadingSpinner'
 
 describe('<LoadingSpinner />', () => {
     test('renders without crashing', () => {
-        render(<LoadingSpinner />);
+        render(<LoadingSpinner />)
 
-        const spinner = screen.getByRole('img', {name: /loading/i});
-        expect(spinner).toBeInTheDocument();
-    });
-});
+        const spinner = screen.getByTestId('spinner')
+        expect(spinner).toBeInTheDocument()
+    })
+})
