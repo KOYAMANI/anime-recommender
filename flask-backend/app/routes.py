@@ -113,6 +113,7 @@ def mal_callback():
         token=access_token, user_name=user_mal_name, user_id=user_mal_id
     )
 
+
 # TODO: Decide which recommender to use and activate either one
 @bp.route("/api/v1/anime/recommend/", defaults={"user_mal_id": None}, methods=["POST"])
 @bp.route("/api/v1/anime/recommend/<user_mal_id>", methods=["POST"])
