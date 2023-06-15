@@ -38,7 +38,7 @@ docker-compose -p anime-recommender-dev -f docker-compose.dev.yml up --build
 
 ```
 
-## Design decisions
+## Documentation for key aspects
 
 [Frontend](https://github.com/KOYAMANI/anime-recommender/tree/main/docs/frontend/frontend.md)
 
