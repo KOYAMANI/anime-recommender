@@ -48,3 +48,24 @@ They are shared across the app with React Redux, and some contents may become vi
 ## Styling
 
 Tailwind CSS was my choice for styling the application, which makes it highly customizable and promotes component reusability. This enables quicker UI development and less context-switching between HTML and CSS.
+
+## Testing
+
+For testing the frontend application, I have utilized the Jest testing framework along with the testing-library for React whcich allows tesing the components, state management, and API calls effectively.
+
+Tests cover the following main areas:
+
+1. Component Rendering: Tests are written to ensure that components render correctly under various conditions. This involves testing the rendering of individual components, and checking if the right props are passed to child components.
+
+2. API Calls: The application communicates with the backend using various API calls. To ensure the accuracy of these calls (including the right parameters and headers), tests have been written using jest-fetch-mock.
+
+3. State Management: The application uses Redux for state management. Tests are written to confirm that actions dispatched modify the state as expected. This ensures that the logic in Redux slices is correct.
+
+The `docker-compose.dev.yml` file includes a `frontend-test` service. This service automatically runs the tests every time a Docker build is performed
+
+Alternatively, you can also use the following command in `/frontend` directory to run the tests:
+
+```
+npm run test
+
+```

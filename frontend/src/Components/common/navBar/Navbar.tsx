@@ -24,10 +24,10 @@ const Navbar: React.FC = () => {
     return (
         <nav className="flex justify-between items-center bg-blue-500 p-3 text-white">
             <div className="flex space-x-2">
-                <Link to="/">
+                <Link to="/" aria-label="home">
                     <CiHome className="text-2xl" />
                 </Link>
-                <Link to="/login">
+                <Link to="/login" aria-label="login">
                     <CiUser className="text-2xl" />
                 </Link>
             </div>
@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
                     <div>
                         <p>log out</p>
                     </div>
-                    <Link to="/login">
+                    <Link to="/login" aria-label="login">
                         <CiLogout
                             className="text-2xl"
                             onClick={logOutHandler}

@@ -26,7 +26,7 @@ const AnimeListContainer: React.FC<AnimeListContainerProps> = ({ animes }) => {
                     >
                         <img
                             src={anime.image_url}
-                            alt="anime"
+                            alt={anime.title}
                             className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 flex items-center justify-center pl-3 pr-3">

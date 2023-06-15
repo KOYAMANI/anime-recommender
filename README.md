@@ -14,11 +14,12 @@ The main purpose of this project is to reflect all my studies in the universtiy 
 
 ## Main Functionalities
 
-- [x] User login functionality with [MyAnimeList](https://https://myanimelist.net/) OAuth.
+- [x] User login functionality with [MyAnimeList](https://myanimelist.net/) OAuth.
 - [x] Recommend anime with KNN (K nearest neighbor) based content-based filtering.
 - [x] Text field search box with auto-completion.
+- [ ] Anime search in different language (e.g. in Japanese) - TBA
 - [ ] Recommend anime with collaborative based filtering - TBA
-- [ ] Personalize recommendation based on user's watch history in [MyAnimeList](https://https://myanimelist.net/) - TBA
+- [ ] Personalize recommendation based on user's watch history in [MyAnimeList](https://myanimelist.net/) - TBA
 
 ## Getting started
 

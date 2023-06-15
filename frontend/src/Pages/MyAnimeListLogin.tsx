@@ -58,13 +58,19 @@ const MyAnimeListLogin: React.FC = () => {
                     Login with MyAnimeList
                 </button>
             </form>
-            <p className="mt-4">
-                For us to provide better user experience, 
-            </p>
+            <p className="mt-4">For us to provide better user experience,</p>
             <p>
-                we recommend synchronizing your <a href="https://myanimelist.net" className="text-blue-500" target="_blank">MyAnimeList</a> account
+                we recommend synchronizing your{' '}
+                <a
+                    href="https://myanimelist.net"
+                    className="text-blue-500"
+                    target="_blank"
+                >
+                    MyAnimeList
+                </a>{' '}
+                account
             </p>
-            
+
             <div className="w-full h-12 flex items-center justify-center mt-4">
                 {error && <Alert type="error" message={error} />}
             </div>

@@ -74,6 +74,9 @@ def mal_callback():
     code = request.args.get("code")
     code_verifier = json.loads(redis_client.get("code_verifier"))
 
+    if not code:
+        return mal_api_handler.user_oauth_redirect(err="No authorization code provided")
+
     state = request.args.get("state")
     original_state = json.loads(redis_client.get("state"))
     if state != original_state:
@@ -109,26 +112,6 @@ def mal_callback():
     return mal_api_handler.user_oauth_redirect(
         token=access_token, user_name=user_mal_name, user_id=user_mal_id
     )
-
-
-@bp.route("/api/v1/anime/image", methods=["POST"])
-@cross_origin()
-def get_image():
-    mal_api_handler = current_app.config["MAL_API_HANDLER"]
-    content_type = request.headers.get("Content-Type")
-    if content_type == "application/json":
-        if request.method == "POST":
-            body = request.get_json()
-            title = body["title"]
-            try:
-                res = mal_api_handler.get_anime_image(title)
-                return res, 200
-            except KeyError:
-                return json.loads('{"error": "Anime not found!"}'), 400
-        else:
-            return "Method not supported!", 400
-    else:
-        return "Content-Type not supported!", 400
 
 
 # TODO: Decide which recommender to use and activate either one
