@@ -24,7 +24,7 @@ For handling env variables in production, I use AWS Secret Manager in production
 
 This application uses [MyAnimeList OAuth](https://myanimelist.net/apiconfig/references/authorization) for user authentication. The authentication process involves two main steps: redirecting users to MyAnimeList for authorization and handling the callback after authorization.
 
-![mal oauth demo](https://github.com/KOYAMANI/anime-recommender/tree/main/docs/gifs/mal-oauth.gif)
+![mal oauth demo](https://media.giphy.com/media/Wn9nBSqwZWD00PouTh/giphy.gif)
 
 ### Authorization
 
