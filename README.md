@@ -4,7 +4,7 @@
 
 Application is running on: [anirec.eu](https://anirec.eu)
 
-![anime search demo](https://github.com/KOYAMANI/anime-recommender/tree/main/docs/gifs/anime-search.gif)
+![anime search demo](https://media.giphy.com/media/R0vV3krSe7tlxn8DMw/giphy.gif)
 
 ## Background
 
@@ -39,7 +39,8 @@ docker-compose -p anime-recommender-dev -f docker-compose.dev.yml up --build
 
 ## Architecture Overview
 
-![Architecture diagram](https://github.com/KOYAMANI/anime-recommender/tree/main/docs/images/architecture-diagram.png)
+![Architecture diagram](docs/images/architecture-diagram.png)
+
 
 ## Design decisions
 
