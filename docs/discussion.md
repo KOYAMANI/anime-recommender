@@ -73,4 +73,4 @@ Throughout the system, suitable data structures and algorithms are applied to ma
 - CF's computational time is typically longer as it interacts with both the anime data and the rating data.
 - The average number of ratings per user in the dataset is 434, less than 10% of all anime titles (4996). Therefore, it is expected that the new users of the website would have a similar number of ratings, making the benefits of CF less significant compared to Content-Based Filtering.
 
-  Thus, the recommendation system ensures meaningful and tailored recommendations for the users, providing them a unique and personalized anime discovery experience. However, the algorithm can be updated in the future, as the evaluation across different recommendation algorithms is still being performed as part of my bachelor thesis.
+  Thus, the recommendation system ensures meaningful and tailored recommendations for the users. However, the algorithm can be updated in the future, as the evaluation across different recommendation algorithms is still being performed as part of my bachelor thesis.
